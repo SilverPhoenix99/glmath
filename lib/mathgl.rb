@@ -10,8 +10,13 @@ $:.unshift File.dirname(File.expand_path(__FILE__))
    vector3
    vector4
    scalar
-   quaternions
-   eulerangle
+   quaternion
+   euler_angle
+   matrix_stack
 '.each { |f| require f }
 
-#mathn
+include Math
+
+module Math
+  TAU = 2 * PI
+end

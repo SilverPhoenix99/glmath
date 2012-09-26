@@ -51,10 +51,10 @@ m55 = m53.adjoint
 m56 = m53 * m54
 
 
-(1..10).map { |x| "v#{x}" }.each { |x| p instance_eval(x) }
-(1..13).map { |x| "m#{x}.to_s(:matrix)" }.each { |x| puts (instance_eval(x) + "\n\n") }
-(31..42).map { |x| "m#{x}.to_s(:matrix)" }.each { |x| puts (instance_eval(x) + "\n\n") }
-(50..56).map { |x| "m#{x}.to_s(:matrix)" }.each { |x| puts (instance_eval(x) + "\n\n") }
+#(1..10).map { |x| "v#{x}" }.each { |x| p instance_eval(x) }
+#(1..13).map { |x| "m#{x}.to_s(:matrix)" }.each { |x| puts (instance_eval(x) + "\n\n") }
+#(31..42).map { |x| "m#{x}.to_s(:matrix)" }.each { |x| puts (instance_eval(x) + "\n\n") }
+#(50..56).map { |x| "m#{x}.to_s(:matrix)" }.each { |x| puts (instance_eval(x) + "\n\n") }
 
 p m31.normal?
 p m31.trace
