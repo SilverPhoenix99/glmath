@@ -40,18 +40,7 @@ module MathGL
     def rotate(arg, axis = nil)
       self * case
       when axis != nil
-        n = axis.normalize
-        ct = cos arg
-        st = sin arg
-        ct1 = 1 - ct
-        xy = n.x * n.y * ct1
-        xz = n.x * n.z * ct1
-        yz = n.y * n.z * ct1
-
-        Matrix4[n.x * n.x  * ct1 + ct, xy  + n.z * st, xz - n.y * st, 0,
-                xy  - n.z * st, n.y * n.y  * ct1 + ct, yz + n.x * st, 0,
-                xz + n.y * st, yz - n.x * st, n.z * n.z * ct1 + ct, 0,
-                0, 0, 0, 1]
+        Matrix4.rotation(arg, axis)
       when [Quaternion, EulerAngle].any?{ |c| arg.is_a?(c) }
         arg.to_matrix
       else
@@ -59,8 +48,8 @@ module MathGL
       end
     end
 
-    def scale(x, y, z)
-      self * Matrix4[x,0,0,0,0,y,0,0,0,0,z,0,0,0,0,1]
+    def scale(x, y, z, w = 1)
+      self * Matrix4.scale(x, y, z, w)
     end
 
     def shear()
@@ -68,7 +57,7 @@ module MathGL
     end
 
     def translate(x, y, z)
-      self * Matrix4[1,0,0,x,0,1,0,y,0,0,1,z,0,0,0,1]
+      self * Matrix4.translation(x, y, z)
     end
 
     private

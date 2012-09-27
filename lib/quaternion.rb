@@ -50,7 +50,7 @@ module MathGl
     end
 
     def -@
-      self.class.new *@q.map(&:-@)
+      self.class.new(*@q.map(&:-@))
     end
 
     %w'w x y z'.each_with_index do |m, i|
@@ -121,7 +121,20 @@ module MathGl
     end
 
     def to_matrix
+      xx = 2 * x * x
+      yy = 2 * y * y
+      zz = 2 * z * z
+      xy = 2 * x * y
+      wz = 2 * w * z
+      xz = 2 * x * z
+      wy = 2 * w * y
+      yz = 2 * y * z
+      wx = 2 * w * x
 
+      Matrix4[1 - yy - zz, xy - wz, xz + wy, 0,
+              xy + wz, 1 - xx - zz,  yz - wx, 0,
+              xz - wy, yz + wx, 1 - xx - yy, 0,
+              0, 0, 0, 1]
     end
 
     alias_method :conj,  :conjugate

@@ -19,4 +19,3 @@ pms ms
 ms.rotate(TAU/2, Vector3[1, 1, 0])
 pms(ms)
 puts v * ms.current
-
