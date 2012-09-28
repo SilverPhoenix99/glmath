@@ -1,4 +1,4 @@
-module MathGl
+module MathGL
   class Quaternion
     def self.from_angle_axis(angle, axis)
       angle = angle/2
@@ -53,13 +53,22 @@ module MathGl
       self.class.new(*@q.map(&:-@))
     end
 
+    def ==(other)
+      return false unless self.class === other
+      @q == other.instance_variable_get(:@q)
+    end
+
     %w'w x y z'.each_with_index do |m, i|
       define_method m, ->(){ @q[i] }
       define_method "#{m}=", ->(v){ @q[i] = v }
     end
 
-    def coerce other
-      return self, other
+    def coerce(v)
+      case v
+      when Numeric
+        return Scalar.new(v), self
+      else raise TypeError, "#{self.class} can't be coerced into #{v.class}"
+      end
     end
 
     def conjugate
@@ -79,7 +88,7 @@ module MathGl
     end
 
     def difference(q)
-      q * self.inverse
+      q * inverse
     end
 
     def dot_product(q)
@@ -90,8 +99,28 @@ module MathGl
       conjugate / norm
     end
 
+    def inspect
+      "Quaternion(#{w}, #{x}, #{y}, #{z})"
+    end
+
     def imaginary
       [x, y, z]
+    end
+
+    def log
+      alpha = acos(w)
+      s = alpha / sin(alpha)
+      self.class.new(0, *imag.map{ |i| i * s })
+    end
+
+    def normalize
+      self/norm
+    end
+
+    def normalize!
+      i = 1.0/norm
+      @q.map! { |e| e * i }
+      self
     end
 
     def norm
@@ -110,12 +139,22 @@ module MathGl
 
     end
 
+    def to_a
+      @q.dup
+    end
+
+    def to_euler
+      EulerAngle.new(a,b,c)
+    end
+
     def to_s(notation = nil)
       case notation
-      when nil
-        "(#{w}, #{x}, #{y}, #{z})"
       when :scalar_vector
         "(#{w}, [#{x}, #{y}, #{z}])"
+      when :vertical
+        "#{w}\n#{x}\n#{y}\n#{z}"
+      else
+        "(#{w}, #{x}, #{y}, #{z})"
       end
 
     end
@@ -139,6 +178,8 @@ module MathGl
 
     alias_method :conj,  :conjugate
     alias_method :conj!, :conjugate
+    alias_method :cross, :cross_product
+    alias_method :dot,   :dot_product
     alias_method :im,    :imaginary
     alias_method :imag,  :imaginary
     alias_method :inv,   :inverse

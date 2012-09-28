@@ -9,6 +9,11 @@ module MathGl
       define_method "#{m}=", ->(v){ @q[i] = v }
     end
 
+    def ==(other)
+      return false unless self.class === other
+      @e == other.instance_variable_get(:@q)
+    end
+
     def to_matrix(*args)
       args = [:y, :p, :r] if args.length == 0
       cy, sy, cp, sp, cr, sr = nil
@@ -32,7 +37,20 @@ module MathGl
       end.reduce(&:*)
     end
 
-    alias_method :h, :y
-    alias_method :b, :r
+    def to_quaternion
+      Quaternion.new(a, b, c, d)
+    end
+
+    def inspect
+      "Euler Angle (#{@q.join(', ')})"
+    end
+
+    alias_method :h,       :y
+    alias_method :heading, :y
+    alias_method :yaw,     :y
+    alias_method :b,       :r
+    alias_method :bank,    :r
+    alias_method :pitch,   :p
+    alias_method :roll,    :r
   end
 end
