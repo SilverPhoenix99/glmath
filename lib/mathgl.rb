@@ -13,7 +13,7 @@ $:.unshift File.dirname(File.expand_path(__FILE__))
    quaternion
    euler_angle
    matrix_stack
-'.each { |f| require f }
+'.each { |f| require "mathgl/#{f}" }
 
 include Math
 
