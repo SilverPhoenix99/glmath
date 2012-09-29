@@ -33,8 +33,17 @@ module MathGL
       @stack.pop(n)
     end
 
-    def load(m)
-      @stack[-1] = check(m)
+    def load(*args)
+      @stack[-1] = case
+      when args.length == 16
+        Matrix4[*args]
+      when args.length == 9
+        Matrix3[*args].expand
+      when args.length == 1
+        check(args[0])
+      else
+        raise ArgumentError
+      end
     end
 
     def load_identity
