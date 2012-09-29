@@ -21,8 +21,12 @@ module MathGL
       self
     end
 
-    def push(m = nil)
-      self << (m || current)
+    def push(m = current)
+      self << m
+      return self unless block_given?
+      yield self #block.(self)
+      pop
+      self
     end
 
     def pop(n = 1)
