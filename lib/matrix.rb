@@ -15,7 +15,15 @@ module MathGL
 
       def diagonal(*args)
         raise ArgumentError, "wrong number of arguments (#{args.length} for #{dim})" if args.length != dim
-        build { |c, r| c == r ? args[j] : 0 }
+        j = 0
+        build do |c, r|
+          if c == r
+            args[j]
+            j += 1
+          else
+            0
+          end
+        end
       end
 
       def identity
