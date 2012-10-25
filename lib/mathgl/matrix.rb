@@ -27,7 +27,7 @@ module MathGL
       end
 
       def identity
-        scalar(1)
+        scalar(1.0)
       end
 
       def rows(*args)
