@@ -136,7 +136,7 @@ module MathGL
     end
 
     def slerp
-
+      #TODO
     end
 
     def to_a

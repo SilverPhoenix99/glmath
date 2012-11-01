@@ -1,29 +1,25 @@
 module MathGL
   module Matrix
     module ClassMethods
-      def [](*columns)
-        new(*columns)
+      def [](*rows)
+        new(*rows)
       end
 
       def build
-        new(dim.times.flat_map { |c| dim.times.map { |r| yield c, r } })
+        new(dim.times.flat_map { |r| dim.times.map { |c| yield r, c } })
       end
 
       def columns(*args)
-        new(*args.flat_map(&:to_a))
+        new(*args.map(&:to_a).transpose.flatten!)
       end
 
       def diagonal(*args)
         raise ArgumentError, "wrong number of arguments (#{args.length} for #{dim})" if args.length != dim
-        j = 0
-        build do |c, r|
-          if c == r
-            args[j]
-            j += 1
-          else
-            0
-          end
-        end
+        build { |r, c| r == c ? args[r] : 0.0 }
+      end
+
+      def dim
+        dimension
       end
 
       def identity
@@ -31,15 +27,15 @@ module MathGL
       end
 
       def rows(*args)
-        new(*args.transpose.flatten!)
+        new(*args.map(&:to_a).flatten!)
       end
 
       def scalar(n)
-        build { |c, r| c == r ? n : 0 }
+        build { |r, c| r == c ? n : 0.0 }
       end
 
       def zero
-        build { 0 }
+        build { 0.0 }
       end
 
       alias_method :I,    :identity
@@ -53,11 +49,11 @@ module MathGL
     def initialize(*args)
       @m = case
            when args.length == 1 && args[0].length == dim * dim
-             args[0]
+             args[0].dup
            when args.length == dim * dim
              args
            else
-             raise ArgumentError, "wrong number of arguments (#{args.length} or #{dim*dim})"
+             raise ArgumentError, "wrong number of arguments (#{args.length} for #{dim * dim})"
            end
       raise ArgumentError, "It's not numeric" unless @m.all? { |e| Numeric === e }
     end
@@ -69,26 +65,44 @@ module MathGL
       end)
     end
 
+    def *(v)
+      raise ArgumentError, v.class unless v.is_a?(Numeric)
+      self.class.new(*@m.map { |e| e * v })
+    end
+
     def /(other)
       case other
       when Numeric
         self.class.new(*@m.map { |v| v / other })
       when self.class
         self * other.inverse
+      else
+        raise ArgumentError, "Invalid type #{other.class}"
       end
     end
 
     def ==(other)
-      return false unless self.class === other
-      @m == other.instance_variable_get(:@m)
+      other.is_a?(self.class) && @m == other.instance_variable_get(:@m)
     end
 
-    def [](c, r = nil)
-      r ? @m[c*dim+r] : @m[c]
+    def [](r, c = nil)
+      @m[c ? r * dim + c : r]
     end
 
-    def []= (c, r = nil, n)
+    def []= (r, c = nil, n)
+      @m[c ? r * dim + c : r] = n
+    end
 
+    def adjoint
+      clone.adjoint!
+    end
+
+    def adjoint!
+      conjugate!.transpose!
+    end
+
+    def adjugate
+      clone.adjugate!
     end
 
     def coerce(v)
@@ -100,16 +114,16 @@ module MathGL
     end
 
     def collect(&block)
-      return to_enum(:collect) unless block_given?
-      self.class.new(*@m.collect(&block))
+      block_given? ? self.class.new(*@m.collect(&block)) : to_enum(:collect)
     end
 
     def column(c)
-      MathGL.const_get("Vector#{dim}").new(*dim.times.map { |i| @m[i + c * dim] })
+      raise ArgumentError, "can only be between 0 and #{dim}:#{c}" unless (0...dim).include? c
+      MathGL.const_get("Vector#{dim}").new(*dim.times.map { |r| @m[r * dim + c] })
     end
 
     def columns
-      @m.each_slice(dim).to_a
+      dim.times.map { |c| column(c) }
     end
 
     def conjugate
@@ -122,11 +136,11 @@ module MathGL
     end
 
     def clone
-      self.class.new(*@m)
+      self.class.new(@m)
     end
 
     def diagonal
-      dim.times.map { |c| self[c, c] }
+      dim.times.map { |r| self[r, r] }
     end
 
     def diagonal?
@@ -184,7 +198,7 @@ module MathGL
     end
 
     def eql?(other)
-      self.class === other && @m.eql?(other.to_a)
+      other.is_a?(self.class) && @m.eql?(other.to_a)
     end
 
     def hash
@@ -196,7 +210,7 @@ module MathGL
     end
 
     def imaginary
-      collect(&:imaginary)
+      map(&:imaginary)
     end
 
     def inspect
@@ -223,18 +237,11 @@ module MathGL
     end
 
     def orthogonal?
-      rows.each_with_index do |row, r|
-        dim.times do |c|
-          s = 0
-          dim.times do |k|
-            s += row[k] * rows[k][c]
-          end
-        end
-      end
+      self * t == self.class.I
     end
 
     def real
-      collect(&:real)
+      map(&:real)
     end
 
     def real?
@@ -247,7 +254,7 @@ module MathGL
 
     def row(r)
       raise ArgumentError, "can only be between 0 and #{dim}:#{r}" unless (0...dim).include? r
-      MathGL.const_get("Vector#{dim}").new(*dim.times.map { |i| @m[r + i * dim] })
+      MathGL.const_get("Vector#{dim}").new(*@m[r * dim, dim])
     end
 
     def rows
@@ -255,7 +262,7 @@ module MathGL
     end
 
     def singular?
-      det == 0
+      det == 0.0
     end
 
     def symmetric?
@@ -292,15 +299,15 @@ module MathGL
     end
 
     alias_method :component,         :[]
-    alias_method :element,           :[]
     alias_method :conj,              :conjugate
     alias_method :conj!,             :conjugate!
+    alias_method :dim,               :dimension
+    alias_method :element,           :[]
     alias_method :imag,              :imaginary
     alias_method :inv,               :inverse
     alias_method :map,               :collect
     alias_method :t,                 :transpose
     alias_method :t!,                :transpose!
     alias_method :tr,                :trace
-
   end
 end

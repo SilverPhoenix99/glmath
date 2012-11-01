@@ -1,4 +1,3 @@
-#encoding: UTF-8
 module MathGL
   class Matrix4
 
@@ -7,18 +6,24 @@ module MathGL
         4
       end
 
-      def ortho(left, top, right, bottom, far, near)
+      def ortho(left, right, bottom, top, near, far)
         rl = right - left
         tb = top - bottom
         fn = far - near
 
-        new(2.0/rl,0,0,-(right + left)/rl, 0,2.0/tb,0,-(top + bottom)/tb, 0,0,-2.0/fn,-(far + near)/fn, 0,0,0,1)
+        new(2.0/rl,  0.0,     0.0,    -(right + left)/rl,
+            0.0,     2.0/tb,  0.0,    -(top + bottom)/tb,
+            0.0,     0.0,    -2.0/fn, -(far + near)/fn,
+            0.0,     0.0,     0.0,     1.0)
       end
 
-      def perspective(fovy, aspect, z_near, z_far)
-        f = 1.0/ tan(fovy/2.0)
-        nf = z_near - z_far
-        new(f/aspect,0,0,0, 0,f,0,0, 0,0,(z_far + z_near)/nf,(2.0 * z_far * z_near)/nf, 0,0,-1,0)
+      def perspective(fovy, aspect, near, far)
+        t  = 1.0 / tan(fovy * 0.5)
+        fn = 1.0 / (far - near)
+        new(t/aspect, 0.0, 0.0,             0.0,
+            0.0,      t,   0.0,             0.0,
+            0.0 ,     0.0, (far + near)*fn, 1.0,
+            0.0,      0.0, 2.0*far*near*fn, 0.0)
       end
 
       def rotation(angle, axis)
@@ -30,43 +35,59 @@ module MathGL
         xz = n.x * n.z * ct1
         yz = n.y * n.z * ct1
 
-        new(n.x * n.x  * ct1 + ct, xy  + n.z * st, xz - n.y * st, 0,
-        xy  - n.z * st, n.y * n.y  * ct1 + ct, yz + n.x * st, 0,
-        xz + n.y * st, yz - n.x * st, n.z * n.z * ct1 + ct, 0,
-        0, 0, 0, 1)
+        new(n.x*n.x*ct1 + ct, xy - n.z * st,    xz + n.y * st,    0.0,
+            xy + n.z * st,    n.y*n.y*ct1 + ct, yz - n.x * st,    0.0,
+            xz - n.y * st,    yz + n.x * st,    n.z*n.z*ct1 + ct, 0.0,
+            0.0,              0.0,              0.0,              1.0)
       end
 
-      def scale(x, y, z, w = 1)
+      def scale(x, y, z, w = 1.0)
         diagonal(x, y, z, w)
       end
 
       def translation(x, y, z)
-        new(1,0,0,x, 0,1,0,y, 0,0,1,z, 0,0,0,1)
+        new(1.0, 0.0, 0.0, x,
+            0.0, 1.0, 0.0, y,
+            0.0, 0.0, 1.0, z,
+            0.0, 0.0, 0.0, 1.0)
       end
-
-      alias_method :dim,  :dimension
     end
 
     include Matrix
 
     def *(v)
-      #TODO
       case v
-      when Numeric
-        self.class.new(*@m.map { |e| e * v } )
       when Vector4
         v.class.new(
-          @m[0] * v.x + @m[4] * v.y + @m[8]  * v.z + @m[12] * v.w,
-          @m[1] * v.x + @m[5] * v.y + @m[9]  * v.z + @m[13] * v.w,
-          @m[2] * v.x + @m[6] * v.y + @m[10] * v.z + @m[14] * v.w,
-          @m[3] * v.x + @m[7] * v.y + @m[11] * v.z + @m[15] * v.w
-        )
-      when Matrix4
-        self.class.columns(self*v.column(0), self*v.column(1), self*v.column(2), self*v.column(3))
+          @m[ 0] * v.x + @m[ 1] * v.y + @m[ 2] * v.z + @m[ 3] * v.w,
+          @m[ 4] * v.x + @m[ 5] * v.y + @m[ 6] * v.z + @m[ 7] * v.w,
+          @m[ 8] * v.x + @m[ 9] * v.y + @m[10] * v.z + @m[11] * v.w,
+          @m[12] * v.x + @m[13] * v.y + @m[14] * v.z + @m[15] * v.w)
+        when Matrix4
+          m = v.instance_variable_get(:@m)
+          self.class.new(
+            @m[ 0] * m[0] + @m[ 1] * m[4] + @m[ 2] * m[ 8] + @m[ 3] * m[12],
+            @m[ 0] * m[1] + @m[ 1] * m[5] + @m[ 2] * m[ 9] + @m[ 3] * m[13],
+            @m[ 0] * m[2] + @m[ 1] * m[6] + @m[ 2] * m[10] + @m[ 3] * m[14],
+            @m[ 0] * m[3] + @m[ 1] * m[7] + @m[ 2] * m[11] + @m[ 3] * m[15],
+            @m[ 4] * m[0] + @m[ 5] * m[4] + @m[ 6] * m[ 8] + @m[ 7] * m[12],
+            @m[ 4] * m[1] + @m[ 5] * m[5] + @m[ 6] * m[ 9] + @m[ 7] * m[13],
+            @m[ 4] * m[2] + @m[ 5] * m[6] + @m[ 6] * m[10] + @m[ 7] * m[14],
+            @m[ 4] * m[3] + @m[ 5] * m[7] + @m[ 6] * m[11] + @m[ 7] * m[15],
+            @m[ 8] * m[0] + @m[ 9] * m[4] + @m[10] * m[ 8] + @m[11] * m[12],
+            @m[ 8] * m[1] + @m[ 9] * m[5] + @m[10] * m[ 9] + @m[11] * m[13],
+            @m[ 8] * m[2] + @m[ 9] * m[6] + @m[10] * m[10] + @m[11] * m[14],
+            @m[ 8] * m[3] + @m[ 9] * m[7] + @m[10] * m[11] + @m[11] * m[15],
+            @m[12] * m[0] + @m[13] * m[4] + @m[14] * m[ 8] + @m[15] * m[12],
+            @m[12] * m[1] + @m[13] * m[5] + @m[14] * m[ 9] + @m[15] * m[13],
+            @m[12] * m[2] + @m[13] * m[6] + @m[14] * m[10] + @m[15] * m[14],
+            @m[12] * m[3] + @m[13] * m[7] + @m[14] * m[11] + @m[15] * m[15])
+      else
+        super
       end
     end
 
-    def adjoint
+    def adjoint!
       a =  @m[4] *  @m[9] -  @m[5] *  @m[8]
       b =  @m[4] * @m[10] -  @m[6] *  @m[8]
       c =  @m[4] * @m[11] -  @m[7] *  @m[8]
@@ -86,22 +107,23 @@ module MathGL
       r =  @m[9] * @m[15] - @m[11] * @m[13]
       s = @m[10] * @m[15] - @m[11] * @m[14]
 
-      self.class.new(+ @m[5] * s - @m[6] * r + @m[7] * q,
-                     - @m[4] * s + @m[6] * p - @m[7] * o,
-                     + @m[4] * r - @m[5] * p + @m[7] * n,
-                     - @m[4] * q + @m[5] * o - @m[6] * n,
-                     - @m[1] * s + @m[2] * r - @m[3] * q,
-                     + @m[0] * s - @m[2] * p + @m[3] * o,
-                     - @m[0] * r + @m[1] * p - @m[3] * n,
-                     + @m[0] * q - @m[1] * o + @m[2] * n,
-                     + @m[1] * m - @m[2] * k + @m[3] * j,
-                     - @m[0] * m + @m[2] * g - @m[3] * f,
-                     + @m[0] * k - @m[1] * g + @m[3] * d,
-                     - @m[0] * j + @m[1] * f - @m[2] * d,
-                     - @m[1] * l + @m[2] * i - @m[3] * h,
-                     + @m[0] * l - @m[2] * c + @m[3] * b,
-                     - @m[0] * i + @m[1] * c - @m[3] * a,
-                     + @m[0] * h - @m[1] * b + @m[2] * a).transpose!
+      @m = [+ @m[5] * s - @m[6] * r + @m[7] * q,
+            - @m[4] * s + @m[6] * p - @m[7] * o,
+            + @m[4] * r - @m[5] * p + @m[7] * n,
+            - @m[4] * q + @m[5] * o - @m[6] * n,
+            - @m[1] * s + @m[2] * r - @m[3] * q,
+            + @m[0] * s - @m[2] * p + @m[3] * o,
+            - @m[0] * r + @m[1] * p - @m[3] * n,
+            + @m[0] * q - @m[1] * o + @m[2] * n,
+            + @m[1] * m - @m[2] * k + @m[3] * j,
+            - @m[0] * m + @m[2] * g - @m[3] * f,
+            + @m[0] * k - @m[1] * g + @m[3] * d,
+            - @m[0] * j + @m[1] * f - @m[2] * d,
+            - @m[1] * l + @m[2] * i - @m[3] * h,
+            + @m[0] * l - @m[2] * c + @m[3] * b,
+            - @m[0] * i + @m[1] * c - @m[3] * a,
+            + @m[0] * h - @m[1] * b + @m[2] * a]
+      self
     end
 
     def determinant
@@ -120,23 +142,10 @@ module MathGL
 
     def lup
       #TODO
-      if @m[0].abs > @m[1].abs
-        a, b, c, d = 0, 1, 2, 3
-        p = self.class[1.0, 0.0, 0.0, 1.0]
-      else
-        a, b, c, d = 1, 0, 3, 2
-        p = self.class[0.0, 1.0, 1.0, 0.0]
-      end
-      l = self.class[1.0, @m[b].quo(@m[a]), 0, 1.0]
-      u = self.class[@m[a], 0.0, @m[c], @m[d] - @m[b]*@m[c].quo(@m[a])]
-      [l, u, p]
     end
 
     def permutation?
       #TODO
-      n = @m.each_slice(dim).to_a
-      n.map { |c| c.select(&:zero?).count == 1 && c.select { |v| v == 1 }.count == 1 }.all? { |v| v } &&
-        n.transpose.map { |c| c.select(&:zero?).count == 1 && c.select { |v| v == 1 }.count == 1 }.all? { |v| v }
     end
 
     def to_s(notation = nil)
@@ -148,8 +157,6 @@ module MathGL
       end
     end
 
-    alias_method :det,               :determinant
-    alias_method :dim,               :dimension
     alias_method :det,               :determinant
     alias_method :lup_decomposition, :lup
   end

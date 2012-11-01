@@ -5,25 +5,27 @@ module MathGL
       def dimension
         2
       end
-
-      alias_method :dim,  :dimension
     end
 
     include Matrix
 
     def *(v)
       case v
-      when Numeric
-        self.class.new(*@m.map { |e| e * v } )
       when Vector2
-        v.class.new(@m[0] * v.x + @m[2] * v.y, @m[1] * v.x + @m[3] * v.y)
+        v.class.new(@m[0] * v.x + @m[1] * v.y, @m[2] * v.x + @m[3] * v.y)
       when Matrix2
-        self.class.columns(self*v.column(0), self*v.column(1))
+        m = v.instance_variable_get(:@m)
+        self.class.new(@m[0]*m[0] + @m[1]*m[2], @m[0]*m[1] + @m[1]*m[3],
+                       @m[2]*m[0] + @m[3]*m[2], @m[2]*m[1] + @m[3]*m[3])
+      else
+        super
       end
     end
 
-    def adjoint
-      self.class.new(@m[3], -@m[1], -@m[2], @m[0])
+    def adjugate!
+      @m = [ @m[3], -@m[1],
+            -@m[2],  @m[0]]
+      self
     end
 
     def determinant
@@ -56,8 +58,6 @@ module MathGL
       end
     end
 
-    alias_method :det,               :determinant
-    alias_method :dim,               :dimension
     alias_method :det,               :determinant
     alias_method :lup_decomposition, :lup
 
