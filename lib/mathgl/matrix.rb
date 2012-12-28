@@ -151,6 +151,10 @@ module MathGL
       self.class.dimension
     end
 
+    def dup
+      self.class.new(@m)
+    end
+
     def each(which = :all)
       return to_enum :each, which unless block_given?
       case which

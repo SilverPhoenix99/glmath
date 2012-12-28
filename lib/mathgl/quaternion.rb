@@ -95,6 +95,10 @@ module MathGL
       w * q.w + x * q.x + y * q.y + z * q.z
     end
 
+    def dup
+      self.class.new(*@q)
+    end
+
     def inverse
       conjugate / norm
     end

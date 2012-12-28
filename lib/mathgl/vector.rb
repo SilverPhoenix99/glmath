@@ -57,6 +57,10 @@ module MathGL
       self.class.new(*@v.collect(&block))
     end
 
+    def dup
+      self.class.new(*@v)
+    end
+
     def each(&block)
       return to_enum(:each) unless block_given?
       @v.each(&block)

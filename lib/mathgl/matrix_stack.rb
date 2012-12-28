@@ -12,13 +12,17 @@ module MathGL
       end)
     end
 
+    def <<(m)
+      @stack << check(m)
+      self
+    end
+
     def current
       @stack.last.dup
     end
 
-    def <<(m)
-      @stack << check(m)
-      self
+    def dup
+      MatrixStack.new.tap { |ms| ms.instance_variable_set(:@stack, @stack.map(&:dup)) }
     end
 
     def push(m = current)

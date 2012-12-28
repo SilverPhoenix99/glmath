@@ -5,13 +5,13 @@ module MathGl
     end
 
     %w'y r p'.each.each_with_index do |m, i|
-      define_method m, ->(){ @q[i] }
-      define_method "#{m}=", ->(v){ @q[i] = v }
+      define_method m, ->(){ @e[i] }
+      define_method "#{m}=", ->(v){ @e[i] = v }
     end
 
     def ==(other)
       return false unless self.class === other
-      @e == other.instance_variable_get(:@q)
+      @e == other.instance_variable_get(:@e)
     end
 
     def to_matrix(*args)
@@ -42,7 +42,11 @@ module MathGl
     end
 
     def inspect
-      "Euler Angle (#{@q.join(', ')})"
+      "Euler Angle (#{@e.join(', ')})"
+    end
+
+    def dup
+      self.class.new(*@e)
     end
 
     alias_method :h,       :y
