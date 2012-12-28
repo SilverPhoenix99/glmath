@@ -44,6 +44,10 @@ module MathGL
       @v[i]
     end
 
+    def angle(other)
+      Math.acos(dot(other) / Math.sqrt(square_norm * other.square_norm))
+    end
+
     def coerce(v)
       case v
       when Numeric
@@ -97,6 +101,10 @@ module MathGL
       self
     end
 
+    def square_magnitude
+      dot(self)
+    end
+
     %w'x y'.each_with_index do |s, i|
       define_method s, ->(){ @v[i] }
       define_method "#{s}=", ->(v){ @v[i] = v }
@@ -123,10 +131,12 @@ module MathGL
       "Vector#{size}#{@v.inspect}"
     end
 
-    alias_method :dot,    :inner_product
-    alias_method :r,      :magnitude
-    alias_method :length, :magnitude
-    alias_method :norm,   :magnitude
-    alias_method :map,    :collect
+    alias_method :dot,           :inner_product
+    alias_method :r,             :magnitude
+    alias_method :length,        :magnitude
+    alias_method :norm,          :magnitude
+    alias_method :map,           :collect
+    alias_method :square_length, :square_magnitude
+    alias_method :square_norm,   :square_magnitude
   end
 end
