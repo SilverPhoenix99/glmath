@@ -5,6 +5,33 @@ module MathGL
       def dimension
         3
       end
+
+      def rotation(angle, axis, homogenous = false)
+        n = axis.normalize
+        ct = cos angle
+        st = sin angle
+        ct1 = 1 - ct
+        xy = n.x * n.y * ct1
+        xz = n.x * n.z * ct1
+        yz = n.y * n.z * ct1
+
+        m = new(n.x*n.x*ct1 + ct, xy + n.z * st,    xz - n.y * st,
+                xy - n.z * st,    n.y*n.y*ct1 + ct, yz + n.x * st,
+                xz + n.y * st,    yz - n.x * st,    n.z*n.z*ct1 + ct)
+        homogenous ? m.expand : m
+      end
+
+      def scale(x, y, z, homogenous = false)
+        m = diagonal(x, y, z)
+        homogenous ? m.expand : m
+      end
+
+      def translation(x, y, z)
+        Matrix4.new(1.0, 0.0, 0.0, 0.0,
+                    0.0, 1.0, 0.0, 0.0,
+                    0.0, 0.0, 1.0, 0.0,
+                    x,   y,   z,   1.0)
+      end
     end
 
     include Matrix
@@ -49,7 +76,7 @@ module MathGL
       m = @m.dup
       m[3,  0] = 0.0
       m[7,  0] = 0.0
-      m[11, 0] = [0.0, 0.0, 0.0, 0.0, 1.0]
+      m.push(0.0, 0.0, 0.0, 0.0, 1.0)
       Matrix4.new(*m)
     end
 
@@ -65,7 +92,7 @@ module MathGL
       #TODO
       case notation
       when nil     then "Matrix3#{@m}"
-      when :matrix then "#{self[0]}\t#{self[3]}\t#{self[6]}\n#{self[1]}\t#{self[4]}\t#{self[7]}\n#{self[2]}\t#{self[5]}\t#{self[8]}"
+        when :matrix then [0, 3, 6, 1, 4, 7, 2, 5, 8].map { |i| self[i] }.join("\t")
       end
     end
 

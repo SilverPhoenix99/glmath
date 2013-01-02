@@ -11,10 +11,10 @@ module MathGL
         tb = top - bottom
         fn = far - near
 
-        new(2.0/rl,  0.0,     0.0,    -(right + left)/rl,
-            0.0,     2.0/tb,  0.0,    -(top + bottom)/tb,
-            0.0,     0.0,    -2.0/fn, -(far + near)/fn,
-            0.0,     0.0,     0.0,     1.0)
+        new(2.0/rl,              0.0,                0.0,                 0.0,
+            0.0,                 2.0/tb,             0.0,                 0.0,
+            0.0,                 0.0,               -2.0/fn,              0.0,
+            -(right + left)/rl, -(top + bottom)/tb, -(far + near)/fn,     1.0)
       end
 
       def perspective(fovy, aspect, near, far)
@@ -27,18 +27,7 @@ module MathGL
       end
 
       def rotation(angle, axis)
-        n = axis.normalize
-        ct = cos angle
-        st = sin angle
-        ct1 = 1 - ct
-        xy = n.x * n.y * ct1
-        xz = n.x * n.z * ct1
-        yz = n.y * n.z * ct1
-
-        new(n.x*n.x*ct1 + ct, xy - n.z * st,    xz + n.y * st,    0.0,
-            xy + n.z * st,    n.y*n.y*ct1 + ct, yz - n.x * st,    0.0,
-            xz - n.y * st,    yz + n.x * st,    n.z*n.z*ct1 + ct, 0.0,
-            0.0,              0.0,              0.0,              1.0)
+        Matrix3.rotation(angle, axis, true)
       end
 
       def scale(x, y, z, w = 1.0)
@@ -46,10 +35,7 @@ module MathGL
       end
 
       def translation(x, y, z)
-        new(1.0, 0.0, 0.0, x,
-            0.0, 1.0, 0.0, y,
-            0.0, 0.0, 1.0, z,
-            0.0, 0.0, 0.0, 1.0)
+        Matrix3.translation(x, y, z)
       end
     end
 

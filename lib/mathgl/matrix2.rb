@@ -5,6 +5,24 @@ module MathGL
       def dimension
         2
       end
+
+      #conter-clockwise rotation
+      def rotation(theta, homogenous = false)
+        s, c = Math.sin(theta), Math.cos(theta)
+        m = new(c, -s, s, c)
+        homogenous ? m.expand : m
+      end
+
+      def scale(x, y, homogenous = false)
+        m = diagonal(x, y)
+        homogenous ? m.expand : m
+      end
+
+      def translation(x, y)
+        Matrix3.new(1.0, 0.0, 0.0,
+                    0.0, 1.0, 0.0,
+                    x,   y,   1.0)
+      end
     end
 
     include Matrix
@@ -12,7 +30,8 @@ module MathGL
     def *(v)
       case v
       when Vector2
-        v.class.new(@m[0] * v.x + @m[1] * v.y, @m[2] * v.x + @m[3] * v.y)
+        v.class.new(@m[0] * v.x + @m[1] * v.y,
+                    @m[2] * v.x + @m[3] * v.y)
       when Matrix2
         m = v.instance_variable_get(:@m)
         self.class.new(@m[0]*m[0] + @m[1]*m[2], @m[0]*m[1] + @m[1]*m[3],
@@ -30,6 +49,13 @@ module MathGL
 
     def determinant
       @m[0] * @m[3] - @m[1] * @m[2]
+    end
+
+    def expand
+      m = @m.dup
+      m[2,  0] = 0.0
+      m.push(0.0, 0.0, 0.0, 1.0)
+      Matrix3.new(*m)
     end
 
     def lup
