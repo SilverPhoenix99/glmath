@@ -88,14 +88,6 @@ module MathGL
       #TODO
     end
 
-    def to_s(notation = nil)
-      #TODO
-      case notation
-      when nil     then "Matrix3#{@m}"
-        when :matrix then [0, 3, 6, 1, 4, 7, 2, 5, 8].map { |i| self[i] }.join("\t")
-      end
-    end
-
     alias_method :det,               :determinant
     alias_method :lup_decomposition, :lup
   end

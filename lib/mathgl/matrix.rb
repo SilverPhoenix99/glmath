@@ -277,6 +277,13 @@ module MathGL
       @m.dup
     end
 
+    def to_s(notation = nil)
+      case notation
+      when nil     then "#{self.class.name.gsub(/^.*::/,'')}#{@m}"
+      when :matrix then (dim*dim).times.each_slice(dim).map { |s| s.map { |i| self[i] }.join("\t") }.join("\n")
+      end
+    end
+
     def trace
       diagonal.reduce(&:+)
     end

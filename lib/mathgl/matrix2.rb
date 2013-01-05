@@ -30,8 +30,7 @@ module MathGL
     def *(v)
       case v
       when Vector2
-        v.class.new(@m[0] * v.x + @m[1] * v.y,
-                    @m[2] * v.x + @m[3] * v.y)
+        v.class.new(@m[0] * v.x + @m[1] * v.y, @m[2] * v.x + @m[3] * v.y)
       when Matrix2
         m = v.instance_variable_get(:@m)
         self.class.new(@m[0]*m[0] + @m[1]*m[2], @m[0]*m[1] + @m[1]*m[3],
@@ -75,13 +74,6 @@ module MathGL
       n = @m.each_slice(dim).to_a
       n.map { |c| c.select(&:zero?).count == 1 && c.select { |v| v == 1 }.count == 1 }.all? { |v| v } &&
         n.transpose.map { |c| c.select(&:zero?).count == 1 && c.select { |v| v == 1 }.count == 1 }.all? { |v| v }
-    end
-
-    def to_s(notation = nil)
-      case notation
-      when nil     then "Matrix2#{@m}"
-      when :matrix then "#{self[0]}\t#{self[2]}\n#{self[1]}\t#{self[3]}"
-      end
     end
 
     alias_method :det,               :determinant

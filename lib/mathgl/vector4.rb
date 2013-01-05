@@ -21,10 +21,10 @@ module MathGL
       when Vector4
         raise ArgumentError, "Operation '*' not valid for Vector3"
       when Matrix4
-        self.class.new(x *  v[0] + y *  v[1] + z *  v[2] + w *  v[3],
-                       x *  v[4] + y *  v[5] + z *  v[6] + w *  v[7],
-                       x *  v[8] + y *  v[9] + z * v[10] + w * v[11],
-                       x * v[12] + y * v[13] + z * v[14] + w * v[15])
+        self.class.new(x * v[0] + y * v[4] + z * v[ 8] + w * v[12],
+                       x * v[1] + y * v[5] + z * v[ 9] + w * v[13],
+                       x * v[2] + y * v[6] + z * v[10] + w * v[14],
+                       x * v[3] + y * v[7] + z * v[11] + w * v[15])
       end
     end
 

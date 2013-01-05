@@ -21,7 +21,7 @@ module MathGL
       when Vector2
         raise ArgumentError, "Operation '*' not valid for Vector2"
       when Matrix2
-        self.class.new(x * v[0] + y * v[1], x * v[2] + y * v[3])
+        self.class.new(x * v[0] + y * v[2], x * v[1] + y * v[3])
       end
     end
 

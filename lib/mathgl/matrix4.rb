@@ -134,15 +134,6 @@ module MathGL
       #TODO
     end
 
-    def to_s(notation = nil)
-      case notation
-      when nil
-        "Matrix4#{@m}"
-      when :matrix
-        "#{self[0]}\t#{self[4]}\t#{self[8]}\t#{self[12]}\n#{self[1]}\t#{self[5]}\t#{self[9]}\t#{self[13]}\n#{self[2]}\t#{self[6]}\t#{self[10]}\t#{self[14]}\n#{self[3]}\t#{self[7]}\t#{self[11]}\t#{self[15]}"
-      end
-    end
-
     alias_method :det,               :determinant
     alias_method :lup_decomposition, :lup
   end
