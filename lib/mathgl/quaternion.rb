@@ -16,6 +16,10 @@ module MathGL
         new(1.0, 0.0, 0.0, 0.0)
       end
 
+      def slerp(q0, q1, t)
+        (q1*q0.inverse).power(t)*q0
+      end
+
       alias_method :I, :identity
     end
 
@@ -86,12 +90,13 @@ module MathGL
       self
     end
 
+    #Warning: standard notation.
     def cross_product(q)
       self.class.new(
         w * q.w - x * q.x - y * q.y - z * q.z,
-        w * q.x + x * q.w + z * q.y + y * q.z,
-        w * q.y + y * q.w + x * q.z + z * q.x,
-        w * q.z + z * q.w + y * q.x + x * q.y)
+        w * q.x + x * q.w + y * q.z - z * q.y,
+        w * q.y + y * q.w + z * q.x - x * q.z,
+        w * q.z + z * q.w + x * q.y - y * q.x)
     end
 
     def difference(q)
@@ -106,49 +111,61 @@ module MathGL
       self.class.new(*@q)
     end
 
-    def inverse
-      conjugate / norm
-    end
-
-    def inspect
-      "Quaternion[#{w}, #{x}, #{y}, #{z}]"
+    def exp
+      a = Math.sqrt(x*x + y*y + z*z)
+      ew = Math.exp(w)
+      s = ew * Math.sin(a) / a
+      self.class.new(ew * Math.cos(a), x * s, y * s, z * s)
     end
 
     def imaginary
       [x, y, z]
     end
 
+    def inspect
+      "Quaternion[#{w}, #{x}, #{y}, #{z}]"
+    end
+
+    def inverse
+      conjugate / norm
+    end
+
     def log
-      alpha = Math.acos(w)
-      s = alpha / Math.sin(alpha)
-      self.class.new(0, *imag.map{ |i| i * s })
-    end
-
-    def normalize
-      self/norm
-    end
-
-    def normalize!
-      i = 1.0/norm
-      @q.map! { |e| e * i }
-      self
+      nv = x*x + y*y + z*z
+      nq = Math.sqrt(w*w + nv)
+      s = Math.acos(w/nq) / Math.sqrt(nv)
+      self.class.new(Math.log(nq), x * s, y * s, z * s)
     end
 
     def norm
       Math.sqrt(squared_norm)
     end
 
-    def squared_norm
-      w * w + x * x + y * y + z * z
+    def normalize
+      self / norm
+    end
+
+    def normalize!
+      i = 1.0 / norm
+      @q.map! { |e| e * i }
+      self
+    end
+
+    def power(p)
+      (log*p).exp
     end
 
     def real
       w
     end
 
-    #def slerp
-    #  #TODO
-    #end
+    def rotate(v3)
+      Vector3[*(self * Quaternion[0.0, *v3] * inverse).to_a[1..-1]]
+    end
+
+    def squared_norm
+      w * w + x * x + y * y + z * z
+    end
 
     def to_a
       @q.dup
