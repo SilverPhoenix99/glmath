@@ -3,8 +3,8 @@ module MathGL
     def self.from_angle_axis(angle, axis)
       angle = angle/2
       n = axis.normalize
-      sa = sin(angle)
-      new(cos(angle), sa * n.x, sa * n.y, sa * n.z)
+      sa = Math.sin(angle)
+      new(Math.cos(angle), sa * n.x, sa * n.y, sa * n.z)
     end
 
     def self.[](w, x, y, z)
@@ -13,17 +13,17 @@ module MathGL
 
     def initialize(w, x, y, z)
       @q = w, x, y, z
-      raise ArgumentError, "Must be Numeric" unless @q.all? { |e| e.is_a? Numeric}
+      raise ArgumentError, "Must be Numeric" unless @q.all? { |e| e.is_a?(Numeric) }
     end
 
     def +(v)
       case v
-      when Numeric
-        self.class.new(v + w, x, y, z)
-      when Quaternion
-        self.class.new(q + v.w, x + v.x, y + v.y, z + v.z)
-      else
-        v + self
+        when Numeric
+          self.class.new(v + w, x, y, z)
+        when Quaternion
+          self.class.new(q + v.w, x + v.x, y + v.y, z + v.z)
+        else
+          v + self
       end
     end
 
@@ -33,19 +33,19 @@ module MathGL
 
     def *(v)
       case v
-      when Numeric
-        self.class.new(q * v, x * v, y * v, z * v)
-      when Quaternion
-        cross_product(v)
+        when Numeric
+          self.class.new(q * v, x * v, y * v, z * v)
+        when Quaternion
+          cross_product(v)
       end
     end
 
     def /(v)
       case v
-      when Numeric
-        @q.map { |i| i/v}
-      when Quaternion
-        self * v.inverse
+        when Numeric
+          @q.map { |i| i/v}
+        when Quaternion
+          self * v.inverse
       end
     end
 
@@ -65,9 +65,8 @@ module MathGL
 
     def coerce(v)
       case v
-      when Numeric
-        return Scalar.new(v), self
-      else raise TypeError, "#{self.class} can't be coerced into #{v.class}"
+        when Numeric then return Scalar.new(v), self
+        else raise TypeError, "#{self.class} can't be coerced into #{v.class}"
       end
     end
 
@@ -104,7 +103,7 @@ module MathGL
     end
 
     def inspect
-      "Quaternion(#{w}, #{x}, #{y}, #{z})"
+      "Quaternion[#{w}, #{x}, #{y}, #{z}]"
     end
 
     def imaginary
@@ -112,8 +111,8 @@ module MathGL
     end
 
     def log
-      alpha = acos(w)
-      s = alpha / sin(alpha)
+      alpha = Math.acos(w)
+      s = alpha / Math.sin(alpha)
       self.class.new(0, *imag.map{ |i| i * s })
     end
 
@@ -139,26 +138,26 @@ module MathGL
       w
     end
 
-    def slerp
-      #TODO
-    end
+    #def slerp
+    #  #TODO
+    #end
 
     def to_a
       @q.dup
     end
 
-    def to_euler
-      EulerAngle.new(a,b,c)
-    end
+    #def to_euler
+    #  TODO EulerAngle.new(a,b,c)
+    #end
 
     def to_s(notation = nil)
       case notation
-      when :scalar_vector
-        "(#{w}, [#{x}, #{y}, #{z}])"
-      when :vertical
-        "#{w}\n#{x}\n#{y}\n#{z}"
-      else
-        "(#{w}, #{x}, #{y}, #{z})"
+        when :scalar_vector
+          "(#{w}, [#{x}, #{y}, #{z}])"
+        when :vertical
+          "#{w}\n#{x}\n#{y}\n#{z}"
+        else
+          "Quaternion[#{w}, #{x}, #{y}, #{z}]"
       end
 
     end

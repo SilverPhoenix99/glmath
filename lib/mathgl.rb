@@ -1,5 +1,9 @@
 $:.unshift File.dirname(File.expand_path(__FILE__))
 
+module Math
+  TAU = 2 * PI
+end
+
 %w'
    matrix
    matrix2
@@ -15,8 +19,3 @@ $:.unshift File.dirname(File.expand_path(__FILE__))
    matrix_stack
 '.each { |f| require "mathgl/#{f}" }
 
-include Math
-
-module Math
-  TAU = 2 * PI
-end

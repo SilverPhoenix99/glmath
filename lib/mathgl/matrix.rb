@@ -48,12 +48,12 @@ module MathGL
 
     def initialize(*args)
       @m = case
-           when args.length == 1 && args[0].length == dim * dim
-             args[0].dup
-           when args.length == dim * dim
-             args
-           else
-             raise ArgumentError, "wrong number of arguments (#{args.length} for #{dim * dim})"
+             when args.length == 1 && args[0].length == dim * dim
+               args[0].dup
+             when args.length == dim * dim
+               args
+             else
+               raise ArgumentError, "wrong number of arguments (#{args.length} for #{dim * dim})"
            end
       raise ArgumentError, "It's not numeric" unless @m.all? { |e| Numeric === e }
     end
@@ -72,12 +72,12 @@ module MathGL
 
     def /(other)
       case other
-      when Numeric
-        self.class.new(*@m.map { |v| v / other })
-      when self.class
-        self * other.inverse
-      else
-        raise ArgumentError, "Invalid type #{other.class}"
+        when Numeric
+          self.class.new(*@m.map { |v| v / other })
+        when self.class
+          self * other.inverse
+        else
+          raise ArgumentError, "Invalid type #{other.class}"
       end
     end
 
@@ -107,9 +107,8 @@ module MathGL
 
     def coerce(v)
       case v
-      when Numeric
-        return Scalar.new(v), self
-      else raise TypeError, "#{self.class} can't be coerced into #{v.class}"
+        when Numeric then return Scalar.new(v), self
+        else raise TypeError, "#{self.class} can't be coerced into #{v.class}"
       end
     end
 
@@ -119,7 +118,7 @@ module MathGL
 
     def column(c)
       raise ArgumentError, "can only be between 0 and #{dim}:#{c}" unless (0...dim).include? c
-      MathGL.const_get("Vector#{dim}").new(*dim.times.map { |r| @m[r * dim + c] })
+      MathGL.const_get("Vector#{dim}", false).new(*dim.times.map { |r| @m[r * dim + c] })
     end
 
     def columns
@@ -158,22 +157,22 @@ module MathGL
     def each(which = :all)
       return to_enum :each, which unless block_given?
       case which
-      when :all
-        @m.each { |e| yield e }
-      when :diagonal
-        dim.times.each { |c| yield self[c, c] }
-      when :off_diagonal
-        dim.times.each { |c| dim.times.each { |r| yield self[c, r] unless c == r } }
-      when :lower
-        dim.times.each { |c| dim.times.each { |r| yield self[c, r] unless c <= r } }
-      when :strict_lower
-        dim.times.each { |c| dim.times.each { |r| yield self[c, r] unless c < r } }
-      when :strict_upper
-        dim.times.each { |c| dim.times.each { |r| yield self[c, r] unless c > r } }
-      when :upper
-        dim.times.each { |c| dim.times.each { |r| yield self[c, r] unless c >= r } }
-      else
-        raise ArgumentError, which
+        when :all
+          @m.each { |e| yield e }
+        when :diagonal
+          dim.times.each { |c| yield self[c, c] }
+        when :off_diagonal
+          dim.times.each { |c| dim.times.each { |r| yield self[c, r] unless c == r } }
+        when :lower
+          dim.times.each { |c| dim.times.each { |r| yield self[c, r] unless c <= r } }
+        when :strict_lower
+          dim.times.each { |c| dim.times.each { |r| yield self[c, r] unless c < r } }
+        when :strict_upper
+          dim.times.each { |c| dim.times.each { |r| yield self[c, r] unless c > r } }
+        when :upper
+          dim.times.each { |c| dim.times.each { |r| yield self[c, r] unless c >= r } }
+        else
+          raise ArgumentError, which
       end
       self
     end
@@ -181,22 +180,22 @@ module MathGL
     def each_with_index(which = :all)
       return to_enum :each_with_index, which unless block_given?
       case which
-      when :all
-        @m.each_with_index { |e, i| yield e, i / dim, i % dim }
-      when :diagonal
-        dim.times.each { |c| yield self[c, c], c, c }
-      when :off_diagonal
-        dim.times.each { |c| dim.times.each { |r| yield self[c, r], c, r unless c == r } }
-      when :lower
-        dim.times.each { |c| dim.times.each { |r| yield self[c, r], c, r unless c <= r } }
-      when :strict_lower
-        dim.times.each { |c| dim.times.each { |r| yield self[c, r], c, r unless c < r } }
-      when :strict_upper
-        dim.times.each { |c| dim.times.each { |r| yield self[c, r], c, r unless c > r } }
-      when :upper
-        dim.times.each { |c| dim.times.each { |r| yield self[c, r], c, r unless c >= r } }
-      else
-        raise ArgumentError, which
+        when :all
+          @m.each_with_index { |e, i| yield e, i / dim, i % dim }
+        when :diagonal
+          dim.times.each { |c| yield self[c, c], c, c }
+        when :off_diagonal
+          dim.times.each { |c| dim.times.each { |r| yield self[c, r], c, r unless c == r } }
+        when :lower
+          dim.times.each { |c| dim.times.each { |r| yield self[c, r], c, r unless c <= r } }
+        when :strict_lower
+          dim.times.each { |c| dim.times.each { |r| yield self[c, r], c, r unless c < r } }
+        when :strict_upper
+          dim.times.each { |c| dim.times.each { |r| yield self[c, r], c, r unless c > r } }
+        when :upper
+          dim.times.each { |c| dim.times.each { |r| yield self[c, r], c, r unless c >= r } }
+        else
+          raise ArgumentError, which
       end
       self
     end
@@ -258,7 +257,7 @@ module MathGL
 
     def row(r)
       raise ArgumentError, "can only be between 0 and #{dim}:#{r}" unless (0...dim).include? r
-      MathGL.const_get("Vector#{dim}").new(*@m[r * dim, dim])
+      MathGL.const_get("Vector#{dim}", false).new(*@m[r * dim, dim])
     end
 
     def rows
@@ -279,8 +278,8 @@ module MathGL
 
     def to_s(notation = nil)
       case notation
-      when nil     then "#{self.class.name.gsub(/^.*::/,'')}#{@m}"
-      when :matrix then (dim*dim).times.each_slice(dim).map { |s| s.map { |i| self[i] }.join("\t") }.join("\n")
+        when nil     then "#{self.class.name.gsub(/^.*::/,'')}#{@m}"
+        when :matrix then (dim*dim).times.each_slice(dim).map { |s| s.map { |i| self[i] }.join("\t") }.join("\n")
       end
     end
 

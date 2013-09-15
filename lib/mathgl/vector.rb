@@ -1,7 +1,6 @@
 module MathGL
   module Vector
     module ClassMethods
-
       def [](*array)
         new(*array)
       end
@@ -23,15 +22,15 @@ module MathGL
     end
 
     def -@
-      self.class.new *@v.map(&:-@)
+      self.class.new(*@v.map(&:-@))
     end
 
     def /(v)
       case v
-      when Numeric
-        self.class.new *@v.map{ |e| e / v }
-      else
-        raise ArgumentError, "Operation '/' not valid for #{v.class}"
+        when Numeric
+          self.class.new *@v.map{ |e| e / v }
+        else
+          raise ArgumentError, "Operation '/' not valid for #{v.class}"
       end
     end
 
@@ -50,9 +49,8 @@ module MathGL
 
     def coerce(v)
       case v
-      when Numeric
-        return Scalar.new(v), self
-      else raise TypeError, "#{self.class} can't be coerced into #{v.class}"
+        when Numeric then return Scalar.new(v), self
+        else raise TypeError, "#{self.class} can't be coerced into #{v.class}"
       end
     end
 
@@ -101,6 +99,10 @@ module MathGL
       self
     end
 
+    def size
+      self.class.size
+    end
+
     def square_magnitude
       dot(self)
     end
@@ -120,10 +122,10 @@ module MathGL
 
     def to_s(notation = nil)
       case notation
-      when nil        then "Vector#{size}#{@v}"
-      when :row       then "[#{@v.join("\t")}]"
-      when :column    then @v.join("\n")
-      when :cartesian then "(#{@v.join(", ")})"
+        when nil        then "Vector#{size}#{@v.inspect}"
+        when :row       then "[#{@v.join("\t")}]"
+        when :column    then @v.join("\n")
+        when :cartesian then "(#{@v.join(", ")})"
       end
     end
 

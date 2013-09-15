@@ -6,10 +6,20 @@ module MathGL
         4
       end
 
+      def look_at(eye, center, up)
+        f = (center - eye).normalize!
+        s = f.cross(up.normalize)
+        u = s.cross(f)
+        new(s.x,    u.x,   -f.x,   0.0,
+            s.y,    u.y,   -f.y,   0.0,
+            s.z,    u.z,   -f.z,   0.0,
+           -eye.x, -eye.y, -eye.z, 1.0)
+      end
+
       def ortho(left, right, bottom, top, near, far)
-        rl = right - left
-        tb = top - bottom
-        fn = far - near
+        rl = (right - left).to_f
+        tb = (top - bottom).to_f
+        fn = (far - near).to_f
 
         new(2.0/rl,              0.0,                0.0,                 0.0,
             0.0,                 2.0/tb,             0.0,                 0.0,
@@ -18,7 +28,7 @@ module MathGL
       end
 
       def perspective(fovy, aspect, near, far)
-        t  = 1.0 / tan(fovy * 0.5)
+        t  = 1.0 / Math.tan(fovy * 0.5)
         fn = 1.0 / (far - near)
         new(t/aspect, 0.0, 0.0,             0.0,
             0.0,      t,   0.0,             0.0,
@@ -126,13 +136,13 @@ module MathGL
         @m[3] * (-@m[4] * c - @m[5] * e - @m[6] * f)
     end
 
-    def lup
-      #TODO
-    end
+    #def lup
+    #  #TODO
+    #end
 
-    def permutation?
-      #TODO
-    end
+    #def permutation?
+    #  #TODO
+    #end
 
     alias_method :det,               :determinant
     alias_method :lup_decomposition, :lup
