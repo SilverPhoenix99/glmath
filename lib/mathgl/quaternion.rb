@@ -1,19 +1,27 @@
 module MathGL
   class Quaternion
-    def self.from_angle_axis(angle, axis)
-      angle = angle/2
-      n = axis.normalize
-      sa = Math.sin(angle)
-      new(Math.cos(angle), sa * n.x, sa * n.y, sa * n.z)
-    end
+    class << self
+      def [](*args)
+        new(*args)
+      end
 
-    def self.[](w, x, y, z)
-      new(w, x, y, z)
+      def from_angle_axis(angle, axis)
+        angle = angle/2.0
+        n = axis.normalize
+        sa = Math.sin(angle)
+        new(Math.cos(angle), sa * n.x, sa * n.y, sa * n.z)
+      end
+
+      def identity
+        new(1.0, 0.0, 0.0, 0.0)
+      end
+
+      alias_method :I, :identity
     end
 
     def initialize(w, x, y, z)
       @q = w, x, y, z
-      raise ArgumentError, "Must be Numeric" unless @q.all? { |e| e.is_a?(Numeric) }
+      raise ArgumentError, 'argumnents must be Numeric' unless @q.all? { |e| e.is_a?(Numeric) }
     end
 
     def +(v)
@@ -27,8 +35,8 @@ module MathGL
       end
     end
 
-    def - q
-      self + -q
+    def -(q)
+      self + (-q)
     end
 
     def *(v)
@@ -54,13 +62,12 @@ module MathGL
     end
 
     def ==(other)
-      return false unless self.class === other
-      @q == other.instance_variable_get(:@q)
+      self.class === other && @q == other.instance_variable_get(:@q)
     end
 
     %w'w x y z'.each_with_index do |m, i|
-      define_method m, ->(){ @q[i] }
-      define_method "#{m}=", ->(v){ @q[i] = v }
+      define_method m, ->() { @q[i] }
+      define_method "#{m}=", ->(v) { @q[i] = v }
     end
 
     def coerce(v)
@@ -76,6 +83,7 @@ module MathGL
 
     def conjugate!
       @q = w, -x, -y, -z
+      self
     end
 
     def cross_product(q)
@@ -146,10 +154,6 @@ module MathGL
       @q.dup
     end
 
-    #def to_euler
-    #  TODO EulerAngle.new(a,b,c)
-    #end
-
     def to_s(notation = nil)
       case notation
         when :scalar_vector
@@ -159,7 +163,6 @@ module MathGL
         else
           "Quaternion[#{w}, #{x}, #{y}, #{z}]"
       end
-
     end
 
     def to_matrix
