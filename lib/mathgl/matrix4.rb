@@ -145,6 +145,6 @@ module MathGL
     #end
 
     alias_method :det,               :determinant
-    alias_method :lup_decomposition, :lup
+    #alias_method :lup_decomposition, :lup
   end
 end
