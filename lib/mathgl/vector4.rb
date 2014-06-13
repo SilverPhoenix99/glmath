@@ -9,11 +9,6 @@ module MathGL
 
     include Vector
 
-    def initialize(x, y, z, w)
-      @v = [x, y, z, w]
-      raise ArgumentError, "It's not numeric" unless @v.all? { |e| Numeric === e }
-    end
-
     def *(v)
       case v
         when Numeric

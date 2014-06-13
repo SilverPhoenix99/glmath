@@ -8,8 +8,8 @@ module MathGL
 
       def look_at(eye, center, up)
         f = (center - eye).normalize!
-        s = f.cross(up.normalize)
-        u = s.cross(f)
+        s = f.cross(up).normalize!
+        u = s.cross(f).normalize!
         new(s.x,    u.x,   -f.x,   0.0,
             s.y,    u.y,   -f.y,   0.0,
             s.z,    u.z,   -f.z,   0.0,
@@ -28,12 +28,12 @@ module MathGL
       end
 
       def perspective(fovy, aspect, near, far)
-        t  = 1.0 / Math.tan(fovy * 0.5)
+        zoom  = 1.0 / Math.tan(fovy * 0.5)
         fn = 1.0 / (far - near)
-        new(t/aspect, 0.0, 0.0,             0.0,
-            0.0,      t,   0.0,             0.0,
-            0.0 ,     0.0, (far + near)*fn, 1.0,
-            0.0,      0.0, 2.0*far*near*fn, 0.0)
+        new(zoom/aspect,  0.0,          0.0, 0.0,
+            0.0,         zoom,          0.0, 0.0,
+            0.0,          0.0,       far*fn, 1.0,
+            0.0,          0.0, -far*near*fn, 0.0)
       end
 
       def rotation(angle, axis)
@@ -145,6 +145,6 @@ module MathGL
     #end
 
     alias_method :det,               :determinant
-    alias_method :lup_decomposition, :lup
+    #alias_method :lup_decomposition, :lup
   end
 end
