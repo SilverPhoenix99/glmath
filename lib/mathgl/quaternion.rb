@@ -55,7 +55,7 @@ module MathGL
     def /(v)
       case v
         when Numeric
-          @q.map { |i| i/v}
+          self.class.new(*@q.map { |i| i/v})
         when Quaternion
           self * v.inverse
       end
