@@ -9,7 +9,7 @@ module MathGL
     def *(other)
       case other
         when Vector2, Vector3, Vector4, Matrix2, Matrix3, Matrix4
-          other.collect{|e| @n * e}
+          other.map{ |e| @n * e }
         else raise ArgumentError
       end
     end
