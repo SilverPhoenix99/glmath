@@ -17,9 +17,9 @@ module MathGL
       end
 
       def ortho(left, right, bottom, top, near, far)
-        rl = (right - left).to_f
-        tb = (top - bottom).to_f
-        fn = (far - near).to_f
+        rl = right.to_f - left.to_f
+        tb = top.to_f   - bottom.to_f
+        fn = far.to_f   - near.to_f
 
         new(2.0/rl,              0.0,                0.0,                 0.0,
             0.0,                 2.0/tb,             0.0,                 0.0,
