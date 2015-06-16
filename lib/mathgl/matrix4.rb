@@ -27,13 +27,22 @@ module MathGL
             -(right + left)/rl, -(top + bottom)/tb, -(far + near)/fn,     1.0)
       end
 
+      # def perspective(fovy, aspect, near, far)
+      #   zoom  = 1.0 / Math.tan(fovy * 0.5)
+      #   fn = 1.0 / (far - near)
+      #   new(zoom/aspect,  0.0,             0.0,   0.0,
+      #       0.0,         zoom,             0.0,   0.0,
+      #       0.0,          0.0, -(far + near)*fn, -1.0,
+      #       0.0,          0.0,   -2*far*near*fn,  0.0)
+      #   end
+
       def perspective(fovy, aspect, near, far)
         zoom  = 1.0 / Math.tan(fovy * 0.5)
         fn = 1.0 / (far - near)
-        new(zoom/aspect,  0.0,          0.0, 0.0,
-            0.0,         zoom,          0.0, 0.0,
-            0.0,          0.0,       far*fn, 1.0,
-            0.0,          0.0, -far*near*fn, 0.0)
+        new(zoom/aspect,  0.0,             0.0,   0.0,
+            0.0,         zoom,             0.0,   0.0,
+            0.0,          0.0, -(far + near)*fn, -2*far*near*fn,
+            0.0,          0.0,   1,  0.0)
       end
 
       def rotation(angle, axis)
