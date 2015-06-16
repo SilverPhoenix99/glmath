@@ -1,5 +1,8 @@
 $:.unshift File.dirname(File.expand_path(__FILE__))
-
+module MathGL
+    VERSION = '0.0.1'
+    VERSION_CODENAME = 'Pitagoras'
+end
 module Math
   TAU = 2 * PI
 end

@@ -8,8 +8,8 @@ module MathGL
 
       def look_at(eye, center, up)
         f = (center - eye).normalize!
-        s = f.cross(up.normalize)
-        u = s.cross(f)
+        s = f.cross(up).normalize!
+        u = s.cross(f).normalize!
         new(s.x,    u.x,   -f.x,   0.0,
             s.y,    u.y,   -f.y,   0.0,
             s.z,    u.z,   -f.z,   0.0,
@@ -17,9 +17,9 @@ module MathGL
       end
 
       def ortho(left, right, bottom, top, near, far)
-        rl = (right - left).to_f
-        tb = (top - bottom).to_f
-        fn = (far - near).to_f
+        rl = right.to_f - left.to_f
+        tb = top.to_f   - bottom.to_f
+        fn = far.to_f   - near.to_f
 
         new(2.0/rl,              0.0,                0.0,                 0.0,
             0.0,                 2.0/tb,             0.0,                 0.0,
@@ -27,13 +27,22 @@ module MathGL
             -(right + left)/rl, -(top + bottom)/tb, -(far + near)/fn,     1.0)
       end
 
+      # def perspective(fovy, aspect, near, far)
+      #   zoom  = 1.0 / Math.tan(fovy * 0.5)
+      #   fn = 1.0 / (far - near)
+      #   new(zoom/aspect,  0.0,             0.0,   0.0,
+      #       0.0,         zoom,             0.0,   0.0,
+      #       0.0,          0.0, -(far + near)*fn, -1.0,
+      #       0.0,          0.0,   -2*far*near*fn,  0.0)
+      #   end
+
       def perspective(fovy, aspect, near, far)
-        t  = 1.0 / Math.tan(fovy * 0.5)
+        zoom  = 1.0 / Math.tan(fovy * 0.5)
         fn = 1.0 / (far - near)
-        new(t/aspect, 0.0, 0.0,             0.0,
-            0.0,      t,   0.0,             0.0,
-            0.0 ,     0.0, (far + near)*fn, 1.0,
-            0.0,      0.0, 2.0*far*near*fn, 0.0)
+        new(zoom/aspect,  0.0,             0.0,   0.0,
+            0.0,         zoom,             0.0,   0.0,
+            0.0,          0.0, -(far + near)*fn, -2*far*near*fn,
+            0.0,          0.0,   1,  0.0)
       end
 
       def rotation(angle, axis)

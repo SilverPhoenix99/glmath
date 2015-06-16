@@ -9,11 +9,6 @@ module MathGL
 
     include Vector
 
-    def initialize(x, y, z)
-      @v = [x, y, z]
-      raise ArgumentError, "It's not numeric" unless @v.all? { |e| Numeric === e }
-    end
-
     def *(v)
       case v
         when Numeric
@@ -32,7 +27,7 @@ module MathGL
     end
 
     def outer_product(v)
-      self.class.new(@v[1] * v.z - @v[2] * v.y, @v[0] * v.z - @v[2] * v.x, @v[0] * v.y - @v[1] * v.x)
+      self.class.new(@v[1] * v.z - @v[2] * v.y, @v[2] * v.x - @v[0] * v.z, @v[0] * v.y - @v[1] * v.x)
     end
 
     def z

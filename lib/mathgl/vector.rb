@@ -6,12 +6,18 @@ module MathGL
       end
 
       def zero
-        new(*([0] * size))
+        new(*([0.0] * size))
       end
     end
 
     def self.included(base)
       base.extend ClassMethods
+    end
+
+    def initialize(*args)
+      raise ArgumentError, "wrong number of arguments (#{args.size} for #{size})" if args.size != size
+      raise ArgumentError, "It's not numeric" unless args.all? { |e| Numeric === e }
+      @v = args
     end
 
     %w'+ -'.each do |s|
@@ -55,7 +61,7 @@ module MathGL
     end
 
     def collect(&block)
-      return to_enum(:collect) unless block_given?
+      return to_enum(__method__) unless block_given?
       self.class.new(*@v.collect(&block))
     end
 
@@ -64,7 +70,7 @@ module MathGL
     end
 
     def each(&block)
-      return to_enum(:each) unless block_given?
+      return to_enum(__method__) unless block_given?
       @v.each(&block)
       self
     end
@@ -89,13 +95,11 @@ module MathGL
     end
 
     def normalize
-      n = magnitude
-      self / n
+      self / magnitude
     end
 
     def normalize!
-      n = magnitude
-      @v.map!{ |e| e/n }
+      @v.map!{ |e| e / magnitude }
       self
     end
 
@@ -122,7 +126,7 @@ module MathGL
 
     def to_s(notation = nil)
       case notation
-        when nil        then "Vector#{size}#{@v.inspect}"
+        when nil        then inspect
         when :row       then "[#{@v.join("\t")}]"
         when :column    then @v.join("\n")
         when :cartesian then "(#{@v.join(", ")})"
