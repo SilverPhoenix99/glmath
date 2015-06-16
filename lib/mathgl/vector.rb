@@ -99,7 +99,8 @@ module MathGL
     end
 
     def normalize!
-      @v.map!{ |e| e / magnitude }
+      mag = magnitude
+      @v.map! { |e| e / mag }
       self
     end
 

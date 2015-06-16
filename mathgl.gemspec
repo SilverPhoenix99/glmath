@@ -1,7 +1,4 @@
-lib = File.expand_path('../lib/', __FILE__)
-$:.unshift lib unless $:.include?(lib)
-
-require 'mathgl'
+require_relative 'lib/mathgl'
 
 Gem::Specification.new do |s|
   s.name          = 'mathgl'
@@ -14,9 +11,10 @@ Gem::Specification.new do |s|
   s.homepage      = 'https://github.com/SilverPhoenix99/mathgl'
   s.require_paths = %w'lib'
   s.files         = Dir['{lib/**/*.rb,*.md}']
+  s.add_development_dependency 'rspec', '~> 3'
   s.post_install_message = <<-eos
 +----------------------------------------------------------------------------+
-  Thank you for choosing Roglew.
+  Thank you for choosing MathGL.
 
   ==========================================================================
   #{MathGL::VERSION} Codename #{MathGL::VERSION_CODENAME}
