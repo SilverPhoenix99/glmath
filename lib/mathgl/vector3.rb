@@ -13,12 +13,12 @@ module MathGL
       case v
         when Numeric
           self.class.new(*@v.map{ |e| e * v })
-        when Vector3
-          raise ArgumentError, "Operation '*' not valid for Vector3"
         when Matrix3
           self.class.new(v[0] * x + v[3] * y + v[6] * z,
                          v[1] * x + v[4] * y + v[7] * z,
                          v[2] * x + v[5] * y + v[8] * z)
+        else
+          raise ArgumentError
       end
     end
 
