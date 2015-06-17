@@ -3,6 +3,7 @@ require_relative 'spec_helper'
 RSpec.describe Vector2 do
 
   it { Vector2.size.should == 2 }
+  it { Vector2.zero.size.should == 2 }
 
   describe '#initialize' do
 
@@ -20,6 +21,14 @@ RSpec.describe Vector2 do
 
   end
 
+  describe 'zero vector' do
+
+    it 'creates a zero vector' do
+      Vector2.zero.should == Vector2[0.0, 0.0]
+    end
+
+  end
+
   subject { Vector2.new(1.0, 2.0) }
 
   describe 'accessor' do
@@ -29,6 +38,30 @@ RSpec.describe Vector2 do
 
     it { subject.y.should == 2.0 }
     it { subject.y.should == subject[1] }
+
+  end
+
+  describe 'sum' do
+
+    it 'accepts a Vector2' do
+      (subject + Vector2[2.0, 1.0]).should == Vector2[3.0, 3.0]
+    end
+
+    it "doesnt accept something other than a Vector2" do
+      expect { subject + :a }.to raise_error(ArgumentError)
+    end
+
+  end
+
+  describe 'subtraction' do
+
+    it 'accepts a Vector2' do
+      (subject - Vector2[2.0, 1.0]).should == Vector2[-1.0, 1.0]
+    end
+
+    it "doesnt accept something other than a Vector2" do
+      expect { subject - :a }.to raise_error(ArgumentError)
+    end
 
   end
 
@@ -45,6 +78,54 @@ RSpec.describe Vector2 do
     it "doesn't accept something other than a Numeric or Matrix2" do
       expect { subject * :a }.to raise_error(ArgumentError)
     end
+
+  end
+
+  describe 'division' do
+
+    it 'accepts a Numeric' do
+      (subject / 2.0).should == Vector2[subject.x / 2.0, subject.y / 2.0]
+    end
+
+    it "doesn't accept something other than a Numeric" do
+      expect { subject / :a }.to raise_error(ArgumentError)
+    end
+
+  end
+
+  describe 'symmetric' do
+
+    it { (-subject).should == Vector2[-subject.x, -subject.y] }
+
+  end
+
+  describe 'inner_product' do
+
+    it 'accepts a Vector2' do
+      (subject.dot(subject)).should == 5
+    end
+
+    it "doesn't accept anything other than a Vector2" do
+      expect { subject.dot :a }.to raise_error(ArgumentError)
+    end
+
+  end
+
+  describe 'magnitude' do
+
+    it { subject.magnitude.should == Math.sqrt(5) }
+
+  end
+
+  describe 'angle' do
+
+    it { subject.angle(subject) == 0 }
+
+  end
+
+  describe 'normalize' do
+
+    it { subject.normalize.should == Vector2[1.0 / Math.sqrt(5), 2.0 / Math.sqrt(5)] }
 
   end
 

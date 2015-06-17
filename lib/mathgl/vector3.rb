@@ -23,6 +23,7 @@ module MathGL
     end
 
     def expand(w)
+      raise ArgumentError unless w.is_a? Numeric
       Vector4.new(*(@v + [w]))
     end
 

@@ -305,7 +305,7 @@ module MathGL
     end
 
     def zero?
-      all?(&:zero?)
+      @m.all?(&:zero?)
     end
 
     alias_method :component,         :[]

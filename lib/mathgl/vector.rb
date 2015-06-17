@@ -22,6 +22,7 @@ module MathGL
 
     %w'+ -'.each do |s|
       define_method(s, ->(v) do
+        raise ArgumentError unless self.class === v
         v = v.instance_variable_get(:@v)
         self.class.new(*[@v, v].transpose.map!{ |a, b| a.send(s, b) })
       end)
@@ -50,6 +51,7 @@ module MathGL
     end
 
     def angle(other)
+      raise ArgumentError unless self.class === other
       Math.acos(dot(other) / Math.sqrt(square_norm * other.square_norm))
     end
 
@@ -110,6 +112,10 @@ module MathGL
 
     def square_magnitude
       dot(self)
+    end
+
+    def zero?
+      @v.all?(&:zero?)
     end
 
     %w'x y'.each_with_index do |s, i|
