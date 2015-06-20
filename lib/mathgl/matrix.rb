@@ -60,6 +60,7 @@ module MathGL
 
     %w'+ -'.each do |s|
       define_method(s, ->(m) do
+        raise ArgumentError unless self.class === m
         m = m.instance_variable_get(:@m)
         self.class.new(*[@m, m].transpose.map { |a, b| a.send(s, b) })
       end)
@@ -117,7 +118,7 @@ module MathGL
     end
 
     def column(c)
-      raise ArgumentError, "can only be between 0 and #{dim}:#{c}" unless (0...dim).include? c
+      raise ArgumentError, "can only be an Integer between 0 and #{dim - 1}:#{c}" unless c.is_a?(Integer) && (0...dim).include?(c)
       MathGL.const_get("Vector#{dim}", false).new(*dim.times.map { |r| @m[r * dim + c] })
     end
 

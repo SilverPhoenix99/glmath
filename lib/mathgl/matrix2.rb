@@ -29,14 +29,16 @@ module MathGL
 
     def *(v)
       case v
-        when Vector2
-          v.class.new(@m[0] * v.x + @m[1] * v.y, @m[2] * v.x + @m[3] * v.y)
-        when Matrix2
-          m = v.instance_variable_get(:@m)
-          self.class.new(@m[0]*m[0] + @m[1]*m[2], @m[0]*m[1] + @m[1]*m[3],
-                         @m[2]*m[0] + @m[3]*m[2], @m[2]*m[1] + @m[3]*m[3])
-        else
-          super
+      when Vector2
+        v.class.new(@m[0] * v.x + @m[1] * v.y, @m[2] * v.x + @m[3] * v.y)
+      when Matrix2
+        m = v.instance_variable_get(:@m)
+        self.class.new(@m[0]*m[0] + @m[1]*m[2], @m[0]*m[1] + @m[1]*m[3],
+                       @m[2]*m[0] + @m[3]*m[2], @m[2]*m[1] + @m[3]*m[3])
+      when Numeric
+        super
+      else
+        raise ArgumentError
       end
     end
 

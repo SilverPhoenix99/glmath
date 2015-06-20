@@ -12,8 +12,8 @@ v2 = MathGL::Vector2[3, 4]
 # puts v3 + v3
 # puts v3.is_a?(MathGL::Vector)
 # puts v3 + :a
-v0 = MathGL::Vector2.zero
-puts v0.zero?
+# v0 = MathGL::Vector2.zero
+# puts v0.zero?
 
 # m1 = MathGL::Matrix2.I
 # m2 = MathGL::Matrix2[0, -4, 3, 7]
@@ -71,3 +71,12 @@ puts v0.zero?
 # print "\n"
 # p m53.det
 # p m53.trace
+
+
+m0 = MathGL::Matrix2[1.0, 2.0, 3.0, 4.0]
+
+puts m0.adjoint
+puts m0.determinant
+puts m0.adjoint * (1/m0.determinant)
+puts m0.inverse
+puts m0/m0
