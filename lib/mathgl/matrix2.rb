@@ -54,9 +54,15 @@ module MathGL
 
     def expand
       m = @m.dup
-      m[2,  0] = 0.0
+      m[2, 0] = 0.0
       m.push(0.0, 0.0, 0.0, 1.0)
       Matrix3.new(*m)
+    end
+
+    def inverse
+      d = determinant
+      raise ArgumentError, 'Determinant is zero' if d.zero?
+      adjugate * (1.0 / d)
     end
 
     def lup
@@ -64,18 +70,12 @@ module MathGL
         a, b, c, d = 0, 1, 2, 3
         p = self.class.new(1.0, 0.0, 0.0, 1.0)
       else
-        a, b, c, d = 1, 0, 3, 2
+        a, b, c, d = 2, 3, 0, 1
         p = self.class.new(0.0, 1.0, 1.0, 0.0)
       end
-      l = self.class.new(1.0, @m[b].quo(@m[a]), 0, 1.0)
-      u = self.class.new(@m[a], 0.0, @m[c], @m[d] - @m[b]*@m[c].quo(@m[a]))
+      l = self.class.new(1.0, 0.0, @m[c].quo(@m[a]), 1.0)
+      u = self.class.new(@m[a], @m[b], 0.0, @m[d] - (@m[b]*@m[c]).quo(@m[a]))
       [l, u, p]
-    end
-
-    def permutation?
-      n = @m.each_slice(dim).to_a
-      n.map { |c| c.select(&:zero?).count == 1 && c.select { |v| v == 1 }.count == 1 }.all? { |v| v } &&
-        n.transpose.map { |c| c.select(&:zero?).count == 1 && c.select { |v| v == 1 }.count == 1 }.all? { |v| v }
     end
 
     alias_method :det,               :determinant

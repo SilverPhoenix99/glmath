@@ -136,15 +136,7 @@ module MathGL
         @m[3] * (-@m[4] * c - @m[5] * e - @m[6] * f)
     end
 
-    #def lup
-    #  #TODO
-    #end
+    alias_method :det, :determinant
 
-    #def permutation?
-    #  #TODO
-    #end
-
-    alias_method :det,               :determinant
-    #alias_method :lup_decomposition, :lup
   end
 end

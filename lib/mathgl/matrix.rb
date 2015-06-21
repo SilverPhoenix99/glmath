@@ -10,7 +10,9 @@ module MathGL
       end
 
       def columns(*args)
-        new(*args.map(&:to_a).transpose.flatten!)
+        raise ArgumentError, "wrong number of arguments #{args.length} for #{dim}" unless args.length == dim
+        raise ArgumentError, "wrong array size. All arrays must have size #{dim}" unless args.all? { |arg| arg.length == dim }
+        new(*args.transpose.flatten(1))
       end
 
       def diagonal(*args)
@@ -26,8 +28,14 @@ module MathGL
         scalar(1.0)
       end
 
+      def length
+        dim * dim
+      end
+
       def rows(*args)
-        new(*args.map(&:to_a).flatten!)
+        raise ArgumentError, "wrong number of arguments #{args.length} for #{dim}" unless args.length == dim
+        raise ArgumentError, "wrong array size. All arrays must have size #{dim}" unless args.all? { |arg| arg.length == dim }
+        new(*args.flatten(1))
       end
 
       def scalar(n)
@@ -35,7 +43,7 @@ module MathGL
       end
 
       def zero
-        build { 0.0 }
+        new(*[0.0]*(dim*dim))
       end
 
       alias_method :I,    :identity
@@ -93,7 +101,8 @@ module MathGL
     end
 
     def adjoint!
-      conjugate!.transpose!
+      conjugate!
+      transpose!
     end
 
     def adjugate
@@ -155,17 +164,17 @@ module MathGL
         when :all
           @m.each { |e| yield e }
         when :diagonal
-          dim.times.each { |c| yield self[c, c] }
+          dim.times.each { |r| yield self[r, r] }
         when :off_diagonal
-          dim.times.each { |c| dim.times.each { |r| yield self[c, r] unless c == r } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c] unless r == c } }
         when :lower
-          dim.times.each { |c| dim.times.each { |r| yield self[c, r] unless c <= r } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c] unless r >= c } }
         when :strict_lower
-          dim.times.each { |c| dim.times.each { |r| yield self[c, r] unless c < r } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c] unless r > c } }
         when :strict_upper
-          dim.times.each { |c| dim.times.each { |r| yield self[c, r] unless c > r } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c] unless r < c } }
         when :upper
-          dim.times.each { |c| dim.times.each { |r| yield self[c, r] unless c >= r } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c] unless r <= c } }
         else
           raise ArgumentError, which
       end
@@ -178,17 +187,17 @@ module MathGL
         when :all
           @m.each_with_index { |e, i| yield e, i / dim, i % dim }
         when :diagonal
-          dim.times.each { |c| yield self[c, c], c, c }
+          dim.times.each { |r| yield self[r, r], r, r }
         when :off_diagonal
-          dim.times.each { |c| dim.times.each { |r| yield self[c, r], c, r unless c == r } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c], r, c unless r == c } }
         when :lower
-          dim.times.each { |c| dim.times.each { |r| yield self[c, r], c, r unless c <= r } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c], r, c unless r >= c } }
         when :strict_lower
-          dim.times.each { |c| dim.times.each { |r| yield self[c, r], c, r unless c < r } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c], r, c unless r > c } }
         when :strict_upper
-          dim.times.each { |c| dim.times.each { |r| yield self[c, r], c, r unless c > r } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c], r, c unless r < c } }
         when :upper
-          dim.times.each { |c| dim.times.each { |r| yield self[c, r], c, r unless c >= r } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c], r, c unless r <= c } }
         else
           raise ArgumentError, which
       end
@@ -204,7 +213,7 @@ module MathGL
     end
 
     def hermitian?
-      t.conj! == self
+      transpose.conjugate! == self
     end
 
     def imaginary
@@ -216,9 +225,6 @@ module MathGL
     end
 
     def inverse
-      # d = det
-      # raise ArgumentError, 'Determinant is 0' if d == 0
-      # adjoint * (1.0/d)
       l, u, p = lup
 
       # Ax = b -> LUx = b. Then y is defined to be Ux
@@ -256,6 +262,8 @@ module MathGL
     end
 
     def lup
+      raise ArgumentError, 'Determinant is zero' if singular?
+
       # get pivot
       p = self.class.identity.rows
       (dim - 1).times do |i|
@@ -288,12 +296,26 @@ module MathGL
     end
 
     def normal?
-      n = t.conjugate!
+      n = transpose.conjugate!
       self * n == n * self
     end
 
     def orthogonal?
-      self * t == self.class.I
+      self * transpose == self.class.I
+    end
+
+    def permutation?
+      rows.each do |r|
+        return false unless r.select { |v| v.abs < 1e-14 }.count == dim - 1
+        return false unless r.index { |v| (1.0 - v).abs < 1e-14 }
+      end
+
+      columns.each do |c|
+        return false unless c.select { |v| v.abs < 1e-14 }.count == dim - 1
+        return false unless c.index { |v| (1.0 - v).abs < 1e-14 }
+      end
+
+      true
     end
 
     def real
@@ -317,8 +339,17 @@ module MathGL
       dim.times.map { |i| row(i) }
     end
 
+    def scalar?
+      diag = []
+      each_with_index do |v, r, c|
+        return false if r != c && !v.zero?
+        diag << v if r == c
+      end
+      diag.uniq.size == 1
+    end
+
     def singular?
-      det == 0.0
+      determinant.zero?
     end
 
     def symmetric?
@@ -351,7 +382,7 @@ module MathGL
     end
 
     def unitary?
-      self * t.conjugate! == self.class.I
+      self * transpose.conjugate! == self.class.I
     end
 
     def upper_triangular?

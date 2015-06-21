@@ -74,15 +74,11 @@ module MathGL
 
     def expand
       m = @m.dup
-      m[3,  0] = 0.0
-      m[7,  0] = 0.0
+      m[3, 0] = 0.0
+      m[7, 0] = 0.0
       m.push(0.0, 0.0, 0.0, 0.0, 1.0)
       Matrix4.new(*m)
     end
-
-    #def permutation?
-    #  #TODO
-    #end
 
     alias_method :det, :determinant
 
