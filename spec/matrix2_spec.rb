@@ -47,7 +47,7 @@ RSpec.describe Matrix2 do
                                             subject[1,1] * 2]
     end
 
-    it "doesnt accept something other than a Matrix2" do
+    it "doesn't accept something other than a Matrix2" do
       expect { subject + :a }.to raise_error(ArgumentError)
     end
 
@@ -59,7 +59,7 @@ RSpec.describe Matrix2 do
       (subject - subject).should be_zero
     end
 
-    it "doesnt accept something other than a Matrix2" do
+    it "doesn't accept something other than a Matrix2" do
       expect { subject - :a }.to raise_error(ArgumentError)
     end
 
@@ -190,8 +190,8 @@ RSpec.describe Matrix2 do
 
   describe 'hermitian' do
 
-    let(:hermitian) { Matrix2. }
-    it { subject.hermitian?.should_not be_hermitian? }
+    # let(:hermitian) { Matrix2. }
+    it { subject.should_not be_hermitian }
 
   end
 
