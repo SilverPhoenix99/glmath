@@ -62,13 +62,13 @@ module MathGL
     def lup
       if @m[0].abs > @m[1].abs
         a, b, c, d = 0, 1, 2, 3
-        p = self.class[1.0, 0.0, 0.0, 1.0]
+        p = self.class.new(1.0, 0.0, 0.0, 1.0)
       else
         a, b, c, d = 1, 0, 3, 2
-        p = self.class[0.0, 1.0, 1.0, 0.0]
+        p = self.class.new(0.0, 1.0, 1.0, 0.0)
       end
-      l = self.class[1.0, @m[b].quo(@m[a]), 0, 1.0]
-      u = self.class[@m[a], 0.0, @m[c], @m[d] - @m[b]*@m[c].quo(@m[a])]
+      l = self.class.new(1.0, @m[b].quo(@m[a]), 0, 1.0)
+      u = self.class.new(@m[a], 0.0, @m[c], @m[d] - @m[b]*@m[c].quo(@m[a]))
       [l, u, p]
     end
 

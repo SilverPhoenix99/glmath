@@ -6,7 +6,7 @@ module MathGL
       end
 
       def build
-        new(dim.times.flat_map { |r| dim.times.map { |c| yield r, c } })
+        new(*dim.times.flat_map { |r| dim.times.map { |c| yield r, c } })
       end
 
       def columns(*args)
@@ -47,14 +47,8 @@ module MathGL
     end
 
     def initialize(*args)
-      @m = case
-             when args.length == 1 && args[0].length == dim * dim
-               args[0].dup
-             when args.length == dim * dim
-               args
-             else
-               raise ArgumentError, "wrong number of arguments (#{args.length} for #{dim * dim})"
-           end
+      @m = args
+      raise ArgumentError, "wrong number of arguments (#{@m.length} for #{dim * dim})" unless @m.length == dim * dim
       raise ArgumentError, "It's not numeric" unless @m.all? { |e| Numeric === e }
     end
 
@@ -119,7 +113,7 @@ module MathGL
 
     def column(c)
       raise ArgumentError, "can only be an Integer between 0 and #{dim - 1}:#{c}" unless c.is_a?(Integer) && (0...dim).include?(c)
-      MathGL.const_get("Vector#{dim}", false).new(*dim.times.map { |r| @m[r * dim + c] })
+      dim.times.map { |r| @m[r * dim + c] }
     end
 
     def columns
@@ -136,7 +130,7 @@ module MathGL
     end
 
     def clone
-      self.class.new(@m)
+      self.class.new(*@m)
     end
 
     def diagonal
@@ -152,7 +146,7 @@ module MathGL
     end
 
     def dup
-      self.class.new(@m)
+      self.class.new(*@m)
     end
 
     def each(which = :all)
@@ -222,9 +216,35 @@ module MathGL
     end
 
     def inverse
-      d = det
-      raise ArgumentError, "Determinant is 0" if d == 0
-      adjoint * (1.0/d)
+      # d = det
+      # raise ArgumentError, 'Determinant is 0' if d == 0
+      # adjoint * (1.0/d)
+      l, u, p = lup
+
+      # Ax = b -> LUx = b. Then y is defined to be Ux
+      y = self.class.zero
+      # Forward solve Ly = b
+      dim.times do |c|
+        dim.times do |i|
+          y[i, c] = i == c ? 1.0 : 0.0
+          (0...i).each { |j| y[i, c] -= l[i, j] * y[j, c] }
+          y[i, c] /= l[i, i]
+        end
+      end
+
+      # Backward solve Ux = y
+      x = self.class.zero
+
+      dim.times do |c|
+        (dim - 1).downto(0) do |i|
+          x[i, c] = y[i, c]
+          (i+1...dim).each { |j| x[i, c] -= u[i, j] * x[j, c] }
+          x[i, c] /= u[i, i]
+        end
+      end
+
+      # x is the inverse
+      x * p
     end
 
     def length
@@ -235,8 +255,40 @@ module MathGL
       each(:strict_upper).all?(&:zero?)
     end
 
+    def lup
+      # get pivot
+      p = self.class.identity.rows
+      (dim - 1).times do |i|
+        max, row = self[i, i], i
+        (i...dim).each { |j| max, row = self[j, i], j if self[j, i] > max }
+        p_row, p_i = p[row], p[i]
+        p[i], p[row] = p_row, p_i
+      end
+      p = self.class.new(*p.flatten(1))
+
+      pivoted = p * self
+
+      # calculate L and U matrices
+      l = self.class.identity
+      u = self.class.zero
+
+      dim.times.each do |i|
+        dim.times.each do |j|
+          if j >= i
+            # upper
+            u[i, j] = pivoted[i, j] - i.times.reduce(0.0) { |sum, k| sum + u[k, j] * l[i, k] }
+          else
+            # lower
+            l[i, j] = (pivoted[i, j] - j.times.reduce(0.0) { |sum, k| sum + u[k, j] * l[i, k] }) / u[j, j]
+          end
+        end
+      end
+
+      [ l, u, p ]
+    end
+
     def normal?
-      n = t.conj!
+      n = t.conjugate!
       self * n == n * self
     end
 
@@ -258,7 +310,7 @@ module MathGL
 
     def row(r)
       raise ArgumentError, "can only be between 0 and #{dim}:#{r}" unless (0...dim).include? r
-      MathGL.const_get("Vector#{dim}", false).new(*@m[r * dim, dim])
+      @m[r * dim, dim]
     end
 
     def rows
@@ -281,6 +333,7 @@ module MathGL
       case notation
         when nil     then "#{self.class.name.gsub(/^.*::/,'')}#{@m}"
         when :matrix then (dim*dim).times.each_slice(dim).map { |s| s.map { |i| self[i] }.join("\t") }.join("\n")
+        else raise ArgumentError, "unknown notation #{notation.inspect}"
       end
     end
 
@@ -298,7 +351,7 @@ module MathGL
     end
 
     def unitary?
-      self * t.conj! == self.class.I
+      self * t.conjugate! == self.class.I
     end
 
     def upper_triangular?
@@ -316,6 +369,7 @@ module MathGL
     alias_method :element,           :[]
     alias_method :imag,              :imaginary
     alias_method :inv,               :inverse
+    alias_method :lup_decomposition, :lup
     alias_method :map,               :collect
     alias_method :t,                 :transpose
     alias_method :t!,                :transpose!

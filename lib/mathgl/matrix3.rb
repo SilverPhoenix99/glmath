@@ -80,15 +80,11 @@ module MathGL
       Matrix4.new(*m)
     end
 
-    #def lup
-    #  #TODO
-    #end
-
     #def permutation?
     #  #TODO
     #end
 
-    alias_method :det,               :determinant
-    #alias_method :lup_decomposition, :lup
+    alias_method :det, :determinant
+
   end
 end

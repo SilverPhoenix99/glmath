@@ -16,11 +16,11 @@ RSpec.describe Matrix2 do
   describe '#initialize' do
 
     it 'accepts a 4 sized Array' do
-      expect { Matrix2.new([1.0, 2.0, 3.0, 4.0]) }.not_to raise_error
+      expect { Matrix2.new(1.0, 2.0, 3.0, 4.0) }.not_to raise_error
     end
 
     it "doesn't accept a 4 sized Array" do
-      expect { Matrix2.new([1.0, 2.0, 3.0, 4.0, 5.0]) }.to raise_error ArgumentError
+      expect { Matrix2.new(1.0, 2.0, 3.0, 4.0, 5.0) }.to raise_error ArgumentError
     end
 
     it 'accepts 4 Numeric' do
@@ -176,7 +176,7 @@ RSpec.describe Matrix2 do
   describe 'column' do
 
     it 'accepts an Integer between 0 and 1' do
-      subject.column(0).should == Vector2[subject[0, 0], subject[1, 0]]
+      subject.column(0).should == [subject[0, 0], subject[1, 0]]
     end
 
     it "doesn't accept an Integer outside 0 and 1" do
@@ -184,7 +184,7 @@ RSpec.describe Matrix2 do
       expect { subject.column( 2) }.to raise_error ArgumentError
     end
 
-    it { subject.columns.should == [Vector2[subject[0, 0], subject[1, 0]], Vector2[subject[0, 1], subject[1, 1]]] }
+    it { subject.columns.should == [[subject[0, 0], subject[1, 0]], [subject[0, 1], subject[1, 1]]] }
 
   end
 
