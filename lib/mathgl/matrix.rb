@@ -55,9 +55,9 @@ module MathGL
     end
 
     def initialize(*args)
+      raise ArgumentError, "wrong number of arguments (#{args.length} for #{dim * dim})" unless args.length == dim * dim
+      raise ArgumentError, "It's not numeric" unless args.all? { |e| Numeric === e }
       @m = args
-      raise ArgumentError, "wrong number of arguments (#{@m.length} for #{dim * dim})" unless @m.length == dim * dim
-      raise ArgumentError, "It's not numeric" unless @m.all? { |e| Numeric === e }
     end
 
     %w'+ -'.each do |s|
@@ -168,13 +168,13 @@ module MathGL
         when :off_diagonal
           dim.times.each { |r| dim.times.each { |c| yield self[r, c] unless r == c } }
         when :lower
-          dim.times.each { |r| dim.times.each { |c| yield self[r, c] unless r >= c } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c] if r >= c } }
         when :strict_lower
-          dim.times.each { |r| dim.times.each { |c| yield self[r, c] unless r > c } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c] if r > c } }
         when :strict_upper
-          dim.times.each { |r| dim.times.each { |c| yield self[r, c] unless r < c } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c] if r < c } }
         when :upper
-          dim.times.each { |r| dim.times.each { |c| yield self[r, c] unless r <= c } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c] if r <= c } }
         else
           raise ArgumentError, which
       end
@@ -191,13 +191,13 @@ module MathGL
         when :off_diagonal
           dim.times.each { |r| dim.times.each { |c| yield self[r, c], r, c unless r == c } }
         when :lower
-          dim.times.each { |r| dim.times.each { |c| yield self[r, c], r, c unless r >= c } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c], r, c if r >= c } }
         when :strict_lower
-          dim.times.each { |r| dim.times.each { |c| yield self[r, c], r, c unless r > c } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c], r, c if r > c } }
         when :strict_upper
-          dim.times.each { |r| dim.times.each { |c| yield self[r, c], r, c unless r < c } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c], r, c if r < c } }
         when :upper
-          dim.times.each { |r| dim.times.each { |c| yield self[r, c], r, c unless r <= c } }
+          dim.times.each { |r| dim.times.each { |c| yield self[r, c], r, c if r <= c } }
         else
           raise ArgumentError, which
       end
@@ -323,7 +323,7 @@ module MathGL
     end
 
     def real?
-      all?(&:real?)
+      @m.all?(&:real?)
     end
 
     def round(ndigits = 0)
@@ -377,7 +377,7 @@ module MathGL
     end
 
     def transpose!
-      @m = @m.each_slice(dim).to_a.transpose.flatten!
+      @m = @m.each_slice(dim).to_a.transpose.flatten!(1)
       self
     end
 

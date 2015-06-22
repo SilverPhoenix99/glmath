@@ -3,6 +3,8 @@ require_relative 'spec_helper'
 RSpec.describe Matrix2 do
 
   subject { Matrix2.new(1.0, 2.0, 3.0, 4.0) }
+  let(:det_zero) { Matrix2.new(1.0, 2.0, 0.0, 0.0) }
+  let(:vector2)  { Vector2[1.0, 2.0] }
 
   describe 'initialize' do
 
@@ -145,9 +147,6 @@ RSpec.describe Matrix2 do
 
   end
 
-  let(:det_zero) { Matrix2.new(1.0, 2.0, 0.0, 0.0) }
-  let(:vector2)  { Vector2[1.0, 2.0] }
-
   describe 'sum' do
 
     it 'accepts a Matrix2' do
@@ -226,7 +225,10 @@ RSpec.describe Matrix2 do
   end
 
   describe 'adjoint' do
-    it { fail }
+
+    let(:matrix_imag) { Matrix2.new(-1.0+1i, 2.0, 0.0, 2.0-3.0i) }
+
+    it { matrix_imag.adjoint.should == Matrix2.new(-1.0-1i, 0.0, 2.0, 2.0+3.0i) }
   end
 
   describe 'adjugate' do
@@ -241,11 +243,19 @@ RSpec.describe Matrix2 do
   end
 
   describe 'coerce' do
-    it { fail }
+    it { subject.coerce(5.0).should == [Scalar.new(5.0), subject] }
   end
 
   describe 'collect' do
-    it { fail }
+
+    it { subject.collect { |x| x }.should == subject }
+
+    it do
+      subject.collect { |x| -x }.should == Matrix2.new(-subject[0],
+                                                       -subject[1],
+                                                       -subject[2],
+                                                       -subject[3])
+    end
   end
 
   describe 'conjugate' do
@@ -260,23 +270,67 @@ RSpec.describe Matrix2 do
   end
 
   describe 'each' do
-    it { fail }
+    it { subject.each.to_a.should == subject.to_a }
+
+    it { subject.each(:diagonal).to_a.should == [subject[0, 0], subject[1, 1]] }
+
+    it { subject.each(:off_diagonal).to_a.should == [subject[0, 1], subject[1, 0]] }
+
+    it { subject.each(:lower).to_a.should == [subject[0, 0], subject[1, 0], subject[1, 1]] }
+
+    it { subject.each(:strict_lower).to_a.should == [subject[1, 0]] }
+
+    it { subject.each(:strict_upper).to_a.should == [subject[0, 1]] }
+
+    it { subject.each(:upper).to_a.should == [subject[0, 0], subject[0, 1], subject[1, 1]] }
+
+    it { expect { subject.each(:something_else).to raise_error(ArgumentError) } }
   end
 
   describe 'each_with_index' do
-    it { fail }
+    it { subject.each_with_index.to_a.should == subject.to_a.each_with_index.map { |v, i| [v, i / subject.dim, i % subject.dim] } }
+
+    it do
+      subject.each_with_index(:diagonal).to_a.should == [ [subject[0, 0], 0, 0], [subject[1, 1], 1, 1] ]
+    end
+
+    it do
+      subject.each_with_index(:off_diagonal).to_a.should == [ [subject[0, 1], 0, 1], [subject[1, 0], 1, 0] ]
+    end
+
+    it do
+      subject.each_with_index(:lower).to_a.should == [ [subject[0, 0], 0, 0], [subject[1, 0], 1, 0], [subject[1, 1], 1, 1] ]
+    end
+
+    it do
+      subject.each_with_index(:strict_lower).to_a.should == [ [subject[1, 0], 1, 0] ]
+    end
+
+    it do
+      subject.each_with_index(:strict_upper).to_a.should == [ [subject[0, 1], 0, 1] ]
+    end
+
+    it do
+      subject.each_with_index(:upper).to_a.should == [ [subject[0, 0], 0, 0], [subject[0, 1], 0, 1], [subject[1, 1], 1, 1] ]
+    end
+
+    it { expect { subject.each_with_index(:something_else).to_a }.to raise_error(ArgumentError) }
   end
 
   describe 'hermitian' do
 
     let(:hermitian) { Matrix2[1, -1i, 1i, 1] }
-    it { subject.should_not be_hermitian }
+    it { should_not be_hermitian }
     it { hermitian.should be_hermitian }
 
   end
 
   describe 'imaginary' do
-    it { fail }
+
+    it { subject.imaginary.should == Matrix2.zero }
+
+    it { Matrix2.new(4+1i, 3+2i, 2+3i, 1+4i).imaginary.should == Matrix2.new(1, 2, 3, 4) }
+
   end
 
   describe 'inverse' do
@@ -284,11 +338,24 @@ RSpec.describe Matrix2 do
   end
 
   describe 'lower_triangular' do
-    it { fail }
+    it { should_not be_lower_triangular }
+
+    it { Matrix2.new(1, 2, 0, 4).should_not be_lower_triangular }
+
+    it { Matrix2.new(1, 0, 3, 4).should be_lower_triangular }
   end
 
   describe 'lup' do
-    it { fail }
+
+    let(:lup) { subject.lup }
+    let(:lm) { lup[0] }
+    let(:um) { lup[1] }
+    let(:pm) { lup[2] }
+
+    it { pm.should == Matrix2.new(0.0, 1.0, 1.0, 0.0) }
+
+    it { should == pm.transpose * lm * um }
+
   end
 
   describe 'normal' do
@@ -296,6 +363,9 @@ RSpec.describe Matrix2 do
   end
 
   describe 'orthogonal' do
+
+    it { should_not be_orthogonal }
+
     it { fail }
   end
 
@@ -304,7 +374,10 @@ RSpec.describe Matrix2 do
   end
 
   describe 'real' do
-    it { fail }
+
+    it { should be_real }
+
+    it { Matrix2.new(1i, 0, 0, 0).should_not be_real }
   end
 
   describe 'round' do
@@ -312,15 +385,25 @@ RSpec.describe Matrix2 do
   end
 
   describe 'singular' do
-    it { fail }
+
+    it { should_not be_singular }
+
+    it { Matrix2.new(1, 1, 1, 1).should be_singular }
   end
 
   describe 'symmetric' do
-    it { fail }
+
+    it { should_not be_symmetric }
+
+    it { Matrix2.identity.should be_symmetric }
+
+    it { Matrix2.zero.should be_symmetric }
+
+    it { Matrix2.new(1, 2, 2, 1).should be_symmetric }
   end
 
   describe 'trace' do
-    it { fail }
+    it { subject.trace.should == subject[0, 0] + subject[1, 1] }
   end
 
   describe 'transpose' do
@@ -339,7 +422,11 @@ RSpec.describe Matrix2 do
   end
 
   describe 'upper_triangular' do
-    it { fail }
+    it { should_not be_upper_triangular }
+
+    it { Matrix2.new(1, 0, 3, 4).should_not be_upper_triangular }
+
+    it { Matrix2.new(1, 2, 0, 4).should be_upper_triangular }
   end
 
   describe 'rotation' do

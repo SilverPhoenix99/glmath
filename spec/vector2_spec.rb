@@ -2,8 +2,10 @@ require_relative 'spec_helper'
 
 RSpec.describe Vector2 do
 
-  it { Vector2.size.should == 2 }
-  it { Vector2.zero.size.should == 2 }
+  describe 'size' do
+    it { Vector2.size.should == 2 }
+    it { Vector2.zero.size.should == 2 }
+  end
 
   describe '#initialize' do
 
@@ -59,7 +61,7 @@ RSpec.describe Vector2 do
       (subject - Vector2[2.0, 1.0]).should == Vector2[-1.0, 1.0]
     end
 
-    it "doesnt accept something other than a Vector2" do
+    it "doesn't accept something other than a Vector2" do
       expect { subject - :a }.to raise_error(ArgumentError)
     end
 
@@ -129,7 +131,7 @@ RSpec.describe Vector2 do
 
   end
 
-  describe '#expand' do
+  describe 'expand' do
 
     it 'accepts one Vector2 argument' do
       subject.expand(Vector2[3, 4]).should == Vector4[1.0, 2.0, 3, 4]

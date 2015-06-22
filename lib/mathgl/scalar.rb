@@ -21,5 +21,13 @@ module MathGL
         else raise ArgumentError
       end
     end
+
+    def ==(other)
+      case other
+        when Scalar then @n == other.instance_variable_get(:@n)
+        when Numeric then @n == other
+        else false
+      end
+    end
   end
 end
