@@ -17,12 +17,6 @@ module MathGL
         m = diagonal(x, y)
         homogenous ? m.expand : m
       end
-
-      def translation(x, y)
-        Matrix3.new(1.0, 0.0, 0.0,
-                    0.0, 1.0, 0.0,
-                    x,   y,   1.0)
-      end
     end
 
     include Matrix

@@ -45,7 +45,10 @@ module MathGL
       end
 
       def translation(x, y, z)
-        Matrix3.translation(x, y, z)
+        Matrix4.new(1.0, 0.0, 0.0, 0.0,
+                    0.0, 1.0, 0.0, 0.0,
+                    0.0, 0.0, 1.0, 0.0,
+                    x,   y,   z,   1.0)
       end
     end
 

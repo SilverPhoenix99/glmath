@@ -26,11 +26,10 @@ module MathGL
         homogenous ? m.expand : m
       end
 
-      def translation(x, y, z)
-        Matrix4.new(1.0, 0.0, 0.0, 0.0,
-                    0.0, 1.0, 0.0, 0.0,
-                    0.0, 0.0, 1.0, 0.0,
-                    x,   y,   z,   1.0)
+      def translation(x, y)
+        Matrix3.new(1.0, 0.0, 0.0,
+                    0.0, 1.0, 0.0,
+                    x,   y,   1.0)
       end
     end
 

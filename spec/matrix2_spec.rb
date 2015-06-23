@@ -1,14 +1,14 @@
-require_relative 'spec_helper'
+require_relative "spec_helper"
 
 RSpec.describe Matrix2 do
 
   subject { Matrix2.new(1.0, 2.0, 3.0, 4.0) }
   let(:det_zero) { Matrix2.new(1.0, 2.0, 0.0, 0.0) }
-  let(:vector2)  { Vector2[1.0, 2.0] }
+  let(:vector2)  { Vector2.new(1.0, 2.0) }
 
-  describe 'initialize' do
+  describe "initialize" do
 
-    it 'accepts a 4 sized Array' do
+    it "accepts a 4 sized Array" do
       expect { Matrix2.new(1.0, 2.0, 3.0, 4.0) }.not_to raise_error
     end
 
@@ -16,7 +16,7 @@ RSpec.describe Matrix2 do
       expect { Matrix2.new(1.0, 2.0, 3.0, 4.0, 5.0) }.to raise_error ArgumentError
     end
 
-    it 'accepts 4 Numeric' do
+    it "accepts 4 Numeric" do
       expect { Matrix2.new(1.0, 2.0, 3.0, 4.0) }.not_to raise_error
     end
 
@@ -24,19 +24,19 @@ RSpec.describe Matrix2 do
       expect { Matrix2.new(:a) }.to raise_error ArgumentError
     end
 
-    it 'works as an array initializer' do
+    it "works as an array initializer" do
       should == Matrix2[1.0, 2.0, 3.0, 4.0]
     end
 
   end
 
-  describe 'build' do
+  describe "build" do
     it { Matrix2.build { |r, c| r * Matrix2.dim + c + 1 }.should == subject }
   end
 
-  describe 'column' do
+  describe "column" do
 
-    it 'accepts 2 arrays of size 2' do
+    it "accepts 2 arrays of size 2" do
       expect { Matrix2.columns([1.0, 2.0], [3.0, 4.0]) }.to_not raise_error
     end
 
@@ -49,7 +49,7 @@ RSpec.describe Matrix2 do
       expect { Matrix2.columns([1.0, 2.0, 5.0], [3.0, 4.0]) }.to raise_error(ArgumentError)
     end
 
-    it 'accepts an Integer between 0 and 1' do
+    it "accepts an Integer between 0 and 1" do
       subject.column(0).should == [subject[0, 0], subject[1, 0]]
       subject.column(1).should == [subject[0, 1], subject[1, 1]]
     end
@@ -63,7 +63,7 @@ RSpec.describe Matrix2 do
 
   end
 
-  describe 'diagonal' do
+  describe "diagonal" do
     it { Matrix2.diagonal(1.0, 2.0).should == Matrix2.new(1.0, 0.0, 0.0, 2.0) }
 
     it { subject.diagonal.should == [1.0, 4.0] }
@@ -74,7 +74,7 @@ RSpec.describe Matrix2 do
     it { should_not be_diagonal }
   end
 
-  describe 'dimension' do
+  describe "dimension" do
     it { Matrix2.dimension.should == 2 }
     it { Matrix2.dim.should == Matrix2.dimension }
     it { Matrix2.zero.dimension.should == 2 }
@@ -82,20 +82,20 @@ RSpec.describe Matrix2 do
     it { subject.dimension.should == 2 }
   end
 
-  describe 'identity' do
+  describe "identity" do
     it { Matrix2.identity.should == Matrix2.new(1.0, 0.0, 0.0, 1.0) }
   end
 
-  describe 'length' do
+  describe "length" do
 
     it { Matrix2.length.should == 4 }
     it { subject.length.should == 4 }
 
   end
 
-  describe 'row' do
+  describe "row" do
 
-    it 'accepts 2 arrays of size 2' do
+    it "accepts 2 arrays of size 2" do
       expect { Matrix2.rows([1.0, 2.0], [3.0, 4.0]) }.to_not raise_error
     end
 
@@ -108,7 +108,7 @@ RSpec.describe Matrix2 do
       expect { Matrix2.rows([1.0, 2.0, 5.0], [3.0, 4.0]) }.to raise_error(ArgumentError)
     end
 
-    it 'accepts an Integer between 0 and 1' do
+    it "accepts an Integer between 0 and 1" do
       subject.row(0).should == [subject[0, 0], subject[0, 1]]
       subject.row(1).should == [subject[1, 0], subject[1, 1]]
     end
@@ -122,34 +122,34 @@ RSpec.describe Matrix2 do
 
   end
 
-  describe 'scalar' do
+  describe "scalar" do
 
-    it 'should only fill the diagonal with the same value' do
+    it "should only fill the diagonal with the same value" do
       Matrix2.scalar(3.0).should == Matrix2.new(3.0, 0.0,
                                                 0.0, 3.0)
     end
 
-    it 'finds if a Matrix2 only has the diagonal filled with a single value and the rest with zero' do
+    it "finds if a Matrix2 only has the diagonal filled with a single value and the rest with zero" do
       Matrix2.new(3.0, 0.0, 0.0, 3.0).should be_scalar
     end
 
   end
 
-  describe 'zero' do
+  describe "zero" do
 
-    it 'creates a Matrix2 filled only with zeros' do
+    it "creates a Matrix2 filled only with zeros" do
       Matrix2.zero.should == Matrix2.new(0.0, 0.0, 0.0, 0.0)
     end
 
-    it 'finds if the Matrix2 only has zeros' do
+    it "finds if the Matrix2 only has zeros" do
       Matrix2.new(0.0, 0.0, 0.0, 0.0).should be_zero
     end
 
   end
 
-  describe 'sum' do
+  describe "sum" do
 
-    it 'accepts a Matrix2' do
+    it "accepts a Matrix2" do
       (subject + subject).should == Matrix2[subject[0,0] * 2,
                                             subject[0,1] * 2,
                                             subject[1,0] * 2,
@@ -162,9 +162,9 @@ RSpec.describe Matrix2 do
 
   end
 
-  describe 'subtraction' do
+  describe "subtraction" do
 
-    it 'accepts a Matrix2' do
+    it "accepts a Matrix2" do
       (subject - subject).should be_zero
     end
 
@@ -174,21 +174,21 @@ RSpec.describe Matrix2 do
 
   end
 
-  describe 'multiplication' do
+  describe "multiplication" do
 
-    it 'accepts a Numeric' do
+    it "accepts a Numeric" do
       (subject * 2).should == Matrix2[subject[0,0] * 2,
                                       subject[0,1] * 2,
                                       subject[1,0] * 2,
                                       subject[1,1] * 2]
     end
 
-    it 'accepts a Vector2' do
+    it "accepts a Vector2" do
       (subject * vector2).should == Vector2[subject[0,0] * vector2.x + subject[0,1] * vector2.y,
                                             subject[1,0] * vector2.x + subject[1,1] * vector2.y]
     end
 
-    it 'accepts a Matrix2' do
+    it "accepts a Matrix2" do
       (subject * subject).should == Matrix2[subject[0,0] * subject[0,0] + subject[0,1] * subject[1,0],
                                             subject[0,0] * subject[0,1] + subject[0,1] * subject[1,1],
                                             subject[1,0] * subject[0,0] + subject[1,1] * subject[1,0],
@@ -201,16 +201,16 @@ RSpec.describe Matrix2 do
 
   end
 
-  describe 'division' do
+  describe "division" do
 
-    it 'accepts a Numeric' do
+    it "accepts a Numeric" do
       (subject / 2.0).should == Matrix2[subject[0,0] / 2.0,
                                         subject[0,1] / 2.0,
                                         subject[1,0] / 2.0,
                                         subject[1,1] / 2.0]
     end
 
-    it 'accepts a Matrix2 with a determinant different than 0' do
+    it "accepts a Matrix2 with a determinant different than 0" do
       (subject / subject).should == subject * subject.inverse
     end
 
@@ -218,20 +218,20 @@ RSpec.describe Matrix2 do
       expect { subject / det_zero }.to raise_error ArgumentError
     end
 
-    it 'return the identity when divided by itself' do
+    it "return the identity when divided by itself" do
       (subject / subject).should == subject.class.identity
     end
 
   end
 
-  describe 'adjoint' do
+  describe "adjoint" do
 
     let(:matrix_imag) { Matrix2.new(-1.0+1i, 2.0, 0.0, 2.0-3.0i) }
 
     it { matrix_imag.adjoint.should == Matrix2.new(-1.0-1i, 0.0, 2.0, 2.0+3.0i) }
   end
 
-  describe 'adjugate' do
+  describe "adjugate" do
 
     it do
       subject.adjugate.should == Matrix2[ subject[1, 1],
@@ -242,11 +242,11 @@ RSpec.describe Matrix2 do
 
   end
 
-  describe 'coerce' do
+  describe "coerce" do
     it { subject.coerce(5.0).should == [Scalar.new(5.0), subject] }
   end
 
-  describe 'collect' do
+  describe "collect" do
 
     it { subject.collect { |x| x }.should == subject }
 
@@ -258,7 +258,7 @@ RSpec.describe Matrix2 do
     end
   end
 
-  describe 'conjugate' do
+  describe "conjugate" do
 
     it do
       subject.conjugate.should == Matrix2[subject[0, 0].conjugate,
@@ -269,7 +269,7 @@ RSpec.describe Matrix2 do
 
   end
 
-  describe 'each' do
+  describe "each" do
     it { subject.each.to_a.should == subject.to_a }
 
     it { subject.each(:diagonal).to_a.should == [subject[0, 0], subject[1, 1]] }
@@ -287,7 +287,7 @@ RSpec.describe Matrix2 do
     it { expect { subject.each(:something_else).to raise_error(ArgumentError) } }
   end
 
-  describe 'each_with_index' do
+  describe "each_with_index" do
     it { subject.each_with_index.to_a.should == subject.to_a.each_with_index.map { |v, i| [v, i / subject.dim, i % subject.dim] } }
 
     it do
@@ -317,7 +317,7 @@ RSpec.describe Matrix2 do
     it { expect { subject.each_with_index(:something_else).to_a }.to raise_error(ArgumentError) }
   end
 
-  describe 'hermitian' do
+  describe "hermitian" do
 
     let(:hermitian) { Matrix2[1, -1i, 1i, 1] }
     it { should_not be_hermitian }
@@ -325,7 +325,7 @@ RSpec.describe Matrix2 do
 
   end
 
-  describe 'imaginary' do
+  describe "imaginary" do
 
     it { subject.imaginary.should == Matrix2.zero }
 
@@ -333,11 +333,11 @@ RSpec.describe Matrix2 do
 
   end
 
-  describe 'inverse' do
+  describe "inverse" do
     it { subject.inverse.should == subject.adjugate * (1.0 / subject.determinant) }
   end
 
-  describe 'lower_triangular' do
+  describe "lower_triangular" do
     it { should_not be_lower_triangular }
 
     it { Matrix2.new(1, 2, 0, 4).should_not be_lower_triangular }
@@ -345,7 +345,7 @@ RSpec.describe Matrix2 do
     it { Matrix2.new(1, 0, 3, 4).should be_lower_triangular }
   end
 
-  describe 'lup' do
+  describe "lup" do
 
     let(:lup) { subject.lup }
     let(:lm) { lup[0] }
@@ -358,40 +358,49 @@ RSpec.describe Matrix2 do
 
   end
 
-  describe 'normal' do
-    it { fail }
+  describe "normal" do
+    it { should_not be_normal }
+
+    it { Matrix2.new(1i, 0, 0, 3-5i).should be_normal }
   end
 
-  describe 'orthogonal' do
+  describe "orthogonal" do
 
     it { should_not be_orthogonal }
 
     it { fail }
   end
 
-  describe 'permutation' do
-    it { fail }
+  describe "permutation" do
+    it { should_not be_permutation }
+    it { Matrix2.identity.should be_permutation }
+    it { Matrix2.new(0.0, 1.0, 1.0, 0.0).should be_permutation }
   end
 
-  describe 'real' do
+  describe "real" do
 
     it { should be_real }
 
     it { Matrix2.new(1i, 0, 0, 0).should_not be_real }
+
+    it { Matrix2.new(1+1i, -2-2i, 3+3i, 4-4i).real.should == Matrix2.new(1, -2, 3, 4) }
+
   end
 
-  describe 'round' do
-    it { fail }
+  describe "round" do
+    it { subject.round.should == subject }
+
+    it { Matrix2.new(1.5, 2.5, 3.5, 4.5).round.should == Matrix2.new(2, 3, 4, 5) }
   end
 
-  describe 'singular' do
+  describe "singular" do
 
     it { should_not be_singular }
 
     it { Matrix2.new(1, 1, 1, 1).should be_singular }
   end
 
-  describe 'symmetric' do
+  describe "symmetric" do
 
     it { should_not be_symmetric }
 
@@ -402,11 +411,11 @@ RSpec.describe Matrix2 do
     it { Matrix2.new(1, 2, 2, 1).should be_symmetric }
   end
 
-  describe 'trace' do
+  describe "trace" do
     it { subject.trace.should == subject[0, 0] + subject[1, 1] }
   end
 
-  describe 'transpose' do
+  describe "transpose" do
 
     it do
       subject.transpose.should == Matrix2[subject[0, 0],
@@ -417,11 +426,11 @@ RSpec.describe Matrix2 do
 
   end
 
-  describe 'unitary' do
+  describe "unitary" do
     it { fail }
   end
 
-  describe 'upper_triangular' do
+  describe "upper_triangular" do
     it { should_not be_upper_triangular }
 
     it { Matrix2.new(1, 0, 3, 4).should_not be_upper_triangular }
@@ -429,23 +438,23 @@ RSpec.describe Matrix2 do
     it { Matrix2.new(1, 2, 0, 4).should be_upper_triangular }
   end
 
-  describe 'rotation' do
+  describe "rotation" do
     it { fail }
   end
 
-  describe 'scale' do
+  describe "scale" do
     it { fail }
   end
 
-  describe 'translation' do
+  describe "translation" do
     it { fail }
   end
 
-  describe 'determinant' do
+  describe "determinant" do
     it { subject.determinant.should == subject[0, 0] * subject[1, 1] - subject[0, 1] * subject[1, 0] }
   end
 
-  describe 'expand' do
+  describe "expand" do
     it { fail }
   end
 
