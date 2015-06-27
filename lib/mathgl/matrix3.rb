@@ -72,11 +72,10 @@ module MathGL
     end
 
     def expand
-      m = @m.dup
-      m[3, 0] = 0.0
-      m[7, 0] = 0.0
-      m.push(0.0, 0.0, 0.0, 0.0, 1.0)
-      Matrix4.new(*m)
+      Matrix4.new(@m[0], @m[1], @m[2], 0.0,
+                  @m[3], @m[4], @m[5], 0.0,
+                  @m[6], @m[7], @m[8], 0.0,
+                  0.0,   0.0,   0.0,   1.0)
     end
 
     alias_method :det, :determinant

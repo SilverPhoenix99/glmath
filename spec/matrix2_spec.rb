@@ -364,13 +364,6 @@ RSpec.describe Matrix2 do
     it { Matrix2.new(1i, 0, 0, 3-5i).should be_normal }
   end
 
-  describe "orthogonal" do
-
-    it { should_not be_orthogonal }
-
-    it { fail }
-  end
-
   describe "permutation" do
     it { should_not be_permutation }
     it { Matrix2.identity.should be_permutation }
@@ -426,10 +419,6 @@ RSpec.describe Matrix2 do
 
   end
 
-  describe "unitary" do
-    it { fail }
-  end
-
   describe "upper_triangular" do
     it { should_not be_upper_triangular }
 
@@ -439,15 +428,16 @@ RSpec.describe Matrix2 do
   end
 
   describe "rotation" do
-    it { fail }
+
+    let(:angle) { 45 * 2 * Math::PI / 360.0 }
+    let(:s) { Math.sin(angle) }
+    let(:c) { Math.cos(angle) }
+
+    it { Matrix2.rotation(angle).should == Matrix2.new(c, -s, s, c) }
   end
 
   describe "scale" do
-    it { fail }
-  end
-
-  describe "translation" do
-    it { fail }
+    it { Matrix2.scale(1.0, 2.0).should == Matrix2.new(1.0, 0.0, 0.0, 2.0) }
   end
 
   describe "determinant" do
@@ -455,7 +445,11 @@ RSpec.describe Matrix2 do
   end
 
   describe "expand" do
-    it { fail }
+    it do
+      subject.expand.should == Matrix3.new(subject[0], subject[1], 0.0,
+                                           subject[2], subject[3], 0.0,
+                                           0.0,        0.0,        1.0)
+    end
   end
 
 end

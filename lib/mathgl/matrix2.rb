@@ -47,10 +47,9 @@ module MathGL
     end
 
     def expand
-      m = @m.dup
-      m[2, 0] = 0.0
-      m.push(0.0, 0.0, 0.0, 1.0)
-      Matrix3.new(*m)
+      Matrix3.new(@m[0], @m[1], 0.0,
+                  @m[2], @m[3], 0.0,
+                  0.0,   0.0,   1.0)
     end
 
     def inverse

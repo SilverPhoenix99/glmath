@@ -300,10 +300,6 @@ module MathGL
       self * n == n * self
     end
 
-    def orthogonal?
-      self * transpose == self.class.I
-    end
-
     def permutation?
       rows.each do |r|
         return false unless r.select { |v| v.abs < 1e-14 }.count == dim - 1
@@ -379,10 +375,6 @@ module MathGL
     def transpose!
       @m = @m.each_slice(dim).to_a.transpose.flatten!(1)
       self
-    end
-
-    def unitary?
-      self * transpose.conjugate! == self.class.I
     end
 
     def upper_triangular?
