@@ -3,25 +3,25 @@ require_relative "spec_helper"
 RSpec.describe Matrix2 do
 
   subject { Matrix2.new(1.0, 2.0, 3.0, 4.0) }
-  let(:det_zero) { Matrix2.new(1.0, 2.0, 0.0, 0.0) }
   let(:vector2)  { Vector2.new(1.0, 2.0) }
+  let(:det_zero) { Matrix2.new(1.0, 2.0, 0.0, 0.0) }
 
   describe "initialize" do
 
-    it "accepts a 4 sized Array" do
-      expect { Matrix2.new(1.0, 2.0, 3.0, 4.0) }.not_to raise_error
+    it "accepts 4 Numeric arguments" do
+      expect { Matrix2.new(*4.times.to_a) }.not_to raise_error
     end
 
-    it "doesn't accept a 4 sized Array" do
-      expect { Matrix2.new(1.0, 2.0, 3.0, 4.0, 5.0) }.to raise_error ArgumentError
+    it "doesn't accept more than 4 arguments" do
+      expect { Matrix2.new(*5.times.to_a) }.to raise_error ArgumentError
     end
 
-    it "accepts 4 Numeric" do
-      expect { Matrix2.new(1.0, 2.0, 3.0, 4.0) }.not_to raise_error
+    it "doesn't accept less than 4 arguments" do
+      expect { Matrix2.new(*3.times.to_a) }.to raise_error ArgumentError
     end
 
-    it "doesn't accept anything other than a 4 sized Array or 4 Numerics" do
-      expect { Matrix2.new(:a) }.to raise_error ArgumentError
+    it "doesn't accept anything other than Numerics" do
+      expect { Matrix2.new(1.0, 2.0, 3.0, :a) }.to raise_error ArgumentError
     end
 
     it "works as an array initializer" do
@@ -42,7 +42,7 @@ RSpec.describe Matrix2 do
 
     it "doesn't accept arrays that aren't length 2" do
       expect { Matrix2.columns([1.0, 2.0]) }.to raise_error(ArgumentError)
-      expect { Matrix2.columns([1.0, 2.0], [3.0, 4.0], [5.0]) }.to raise_error(ArgumentError)
+      expect { Matrix2.columns([1.0, 2.0], [3.0, 4.0], [5.0, 6.0]) }.to raise_error(ArgumentError)
     end
 
     it "doesn't accept subarrays that aren't length 2" do
@@ -177,22 +177,22 @@ RSpec.describe Matrix2 do
   describe "multiplication" do
 
     it "accepts a Numeric" do
-      (subject * 2).should == Matrix2[subject[0,0] * 2,
-                                      subject[0,1] * 2,
-                                      subject[1,0] * 2,
-                                      subject[1,1] * 2]
+      (subject * 2).should == Matrix2[subject[0, 0] * 2,
+                                      subject[0, 1] * 2,
+                                      subject[1, 0] * 2,
+                                      subject[1, 1] * 2]
     end
 
     it "accepts a Vector2" do
-      (subject * vector2).should == Vector2[subject[0,0] * vector2.x + subject[0,1] * vector2.y,
-                                            subject[1,0] * vector2.x + subject[1,1] * vector2.y]
+      (subject * vector2).should == Vector2[subject[0, 0] * vector2.x + subject[0, 1] * vector2.y,
+                                            subject[1, 0] * vector2.x + subject[1, 1] * vector2.y]
     end
 
     it "accepts a Matrix2" do
-      (subject * subject).should == Matrix2[subject[0,0] * subject[0,0] + subject[0,1] * subject[1,0],
-                                            subject[0,0] * subject[0,1] + subject[0,1] * subject[1,1],
-                                            subject[1,0] * subject[0,0] + subject[1,1] * subject[1,0],
-                                            subject[1,0] * subject[0,1] + subject[1,1] * subject[1,1]]
+      (subject * subject).should == Matrix2[subject[0, 0] * subject[0, 0] + subject[0, 1] * subject[1, 0],
+                                            subject[0, 0] * subject[0, 1] + subject[0, 1] * subject[1, 1],
+                                            subject[1, 0] * subject[0, 0] + subject[1, 1] * subject[1, 0],
+                                            subject[1, 0] * subject[0, 1] + subject[1, 1] * subject[1, 1]]
     end
 
     it "doesn't accept anything other than a Numeric, Vector2 or Matrix2" do
@@ -211,7 +211,7 @@ RSpec.describe Matrix2 do
     end
 
     it "accepts a Matrix2 with a determinant different than 0" do
-      (subject / subject).should == subject * subject.inverse
+      (subject / subject).should == subject.class.identity
     end
 
     it "doesn't accept a Matrix2 with a determinant of 0" do

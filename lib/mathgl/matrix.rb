@@ -78,7 +78,9 @@ module MathGL
         when Numeric
           self.class.new(*@m.map { |v| v / other })
         when self.class
-          self * other.inverse
+          # transpose(A) = A'.
+          # A / B = X (=) A = XB (=) B'X' = A'
+          other.transpose.solve(self.transpose).transpose
         else
           raise ArgumentError, "Invalid type #{other.class}"
       end
@@ -225,32 +227,8 @@ module MathGL
     end
 
     def inverse
-      l, u, p = lup
-
-      # Ax = b -> LUx = b. Then y is defined to be Ux
-      y = self.class.zero
-      # Forward solve Ly = b
-      dim.times do |c|
-        dim.times do |i|
-          y[i, c] = i == c ? 1.0 : 0.0
-          (0...i).each { |j| y[i, c] -= l[i, j] * y[j, c] }
-          y[i, c] /= l[i, i]
-        end
-      end
-
-      # Backward solve Ux = y
-      x = self.class.zero
-
-      dim.times do |c|
-        (dim - 1).downto(0) do |i|
-          x[i, c] = y[i, c]
-          (i+1...dim).each { |j| x[i, c] -= u[i, j] * x[j, c] }
-          x[i, c] /= u[i, i]
-        end
-      end
-
-      # x is the inverse
-      x * p
+      # the inverse is solution to the equation AX = I
+      solve(self.class.identity)
     end
 
     def length
@@ -262,19 +240,19 @@ module MathGL
     end
 
     def lup
-      raise ArgumentError, 'Determinant is zero' if singular?
+      raise ArgumentError, "Determinant is zero" if singular?
 
       # get pivot
       p = self.class.identity.rows
+      rows = self.rows
       (dim - 1).times do |i|
-        max, row = self[i, i], i
-        (i...dim).each { |j| max, row = self[j, i], j if self[j, i] > max }
-        p_row, p_i = p[row], p[i]
-        p[i], p[row] = p_row, p_i
+        max, row = rows[i][i], i
+        (i+1...dim).each { |j| max, row = rows[j][i], j if rows[j][i] > max }
+        p[i], p[row] = p[row], p[i]
+        rows[i], rows[row] = rows[row], rows[i]
       end
       p = self.class.new(*p.flatten(1))
-
-      pivoted = p * self
+      pivoted = self.class.new(*rows.flatten(1))
 
       # calculate L and U matrices
       l = self.class.identity
@@ -284,10 +262,10 @@ module MathGL
         dim.times.each do |j|
           if j >= i
             # upper
-            u[i, j] = pivoted[i, j] - i.times.reduce(0.0) { |sum, k| sum + u[k, j] * l[i, k] }
+            u[i, j] = pivoted[i, j] - i.times.map { |k| u[k, j] * l[i, k] }.reduce(0.0, &:+)
           else
             # lower
-            l[i, j] = (pivoted[i, j] - j.times.reduce(0.0) { |sum, k| sum + u[k, j] * l[i, k] }) / u[j, j]
+            l[i, j] = (pivoted[i, j] - j.times.map { |k| u[k, j] * l[i, k] }.reduce(0.0, &:+)) / u[j, j]
           end
         end
       end
@@ -346,6 +324,39 @@ module MathGL
 
     def singular?
       determinant.zero?
+    end
+
+    # Solves *AX = B*, where *A* is `self` and *B* is the argument
+    def solve(matrix)
+      raise ArgumentError, "expected class #{ self.class }, but got #{ matrix.class }" unless self.class === matrix
+
+      l, u, p = lup
+
+      # Ax = b (=) LUx = b (=) Ly = b && Ux = y
+      # If y is defined to be Ux: Ly = b
+      y = self.class.zero
+      matrix = p * matrix
+      # Forward solve Ly = b
+      dim.times do |c|
+        dim.times do |r|
+          y[r, c] = matrix[r, c]
+          (0...r).each { |j| y[r, c] -= l[r, j] * y[j, c] }
+          y[r, c] /= l[r, r]
+        end
+      end
+
+      # Backward solve Ux = y
+      x = self.class.zero
+
+      dim.times do |c|
+        (dim - 1).downto(0) do |i|
+          x[i, c] = y[i, c]
+          (i+1...dim).each { |j| x[i, c] -= u[i, j] * x[j, c] }
+          x[i, c] /= u[i, i]
+        end
+      end
+
+      x
     end
 
     def symmetric?
