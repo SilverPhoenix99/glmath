@@ -39,8 +39,8 @@ RSpec.describe Scalar do
     let(:n) { 2 }
     let(:scalar) { Scalar.new(n) }
     let(:m2) { Matrix2[1.0, 2.0, 3.0, 4.0] }
-    let(:m3) { Matrix2.translation(1.0, 2.0) }
-    let(:m4) { Matrix3.translation(1.0, 2.0, 3.0) }
+    let(:m3) { Matrix3.translation(1.0, 2.0) }
+    let(:m4) { Matrix4.translation(1.0, 2.0, 3.0) }
 
     it "doesn't expect a Numeric" do
       expect { scalar / n }.to raise_error(ArgumentError)
