@@ -47,10 +47,9 @@ module GLMath
     end
 
     def expand
-      m = @m.dup
-      m[2, 0] = 0.0
-      m.push(0.0, 0.0, 0.0, 1.0)
-      Matrix3.new(*m)
+      Matrix3.new(@m[0], @m[1], 0.0,
+                  @m[2], @m[3], 0.0,
+                  0.0,   0.0,   1.0)
     end
 
     def inverse
@@ -60,6 +59,8 @@ module GLMath
     end
 
     def lup
+      raise ArgumentError, "Determinant is zero" if singular?
+
       if @m[0].abs > @m[1].abs
         a, b, c, d = 0, 1, 2, 3
         p = self.class.new(1.0, 0.0, 0.0, 1.0)
@@ -67,8 +68,9 @@ module GLMath
         a, b, c, d = 2, 3, 0, 1
         p = self.class.new(0.0, 1.0, 1.0, 0.0)
       end
-      l = self.class.new(1.0, 0.0, @m[c].quo(@m[a]), 1.0)
-      u = self.class.new(@m[a], @m[b], 0.0, @m[d] - (@m[b]*@m[c]).quo(@m[a]))
+
+      l = self.class.new(1.0, 0.0, @m[c] / @m[a], 1.0)
+      u = self.class.new(@m[a], @m[b], 0.0, @m[d] - @m[b]*@m[c] / @m[a])
       [l, u, p]
     end
 
