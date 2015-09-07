@@ -1,4 +1,4 @@
-module MathGL
+module GLMath
   # Left Handed
   class Matrix4
     class << self

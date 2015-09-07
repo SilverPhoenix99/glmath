@@ -1,1 +1,1 @@
-require_relative '../lib/mathgl'
+require_relative '../lib/glmath'

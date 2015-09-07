@@ -1,4 +1,4 @@
-require_relative '../lib/mathgl'
+require_relative '../lib/glmath'
 require 'rspec'
 require 'rspec/expectations'
 
@@ -8,4 +8,4 @@ RSpec.configure do |config|
   end
 end
 
-include MathGL
+include GLMath

@@ -1,4 +1,4 @@
-module MathGl
+module GLMath
   class EulerAngle
     def initialize(y, r, p)
       @e = y, r, p

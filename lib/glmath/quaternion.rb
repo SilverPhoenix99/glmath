@@ -1,4 +1,4 @@
-module MathGL
+module GLMath
   class Quaternion
     class << self
       def [](*args)

@@ -364,14 +364,14 @@ RSpec.describe Matrix2 do
     it { Matrix2.new(1i, 0, 0, 3-5i).should be_normal }
   end
 
-  describe "orthogonal" do
+  describe :orthogonal do
 
     it { should_not be_orthogonal }
 
     it { fail }
   end
 
-  describe "permutation" do
+  describe :permutation do
     it { should_not be_permutation }
     it { Matrix2.identity.should be_permutation }
     it { Matrix2.new(0.0, 1.0, 1.0, 0.0).should be_permutation }

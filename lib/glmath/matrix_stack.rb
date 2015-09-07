@@ -1,4 +1,4 @@
-module MathGL
+module GLMath
   class MatrixStack
 
     def initialize
