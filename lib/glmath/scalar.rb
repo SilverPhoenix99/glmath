@@ -24,7 +24,7 @@ module GLMath
 
     def ==(other)
       case other
-        when Scalar then @n == other.instance_variable_get(:@n)
+        when Scalar  then @n == other.instance_variable_get(:@n)
         when Numeric then @n == other
         else false
       end

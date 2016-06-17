@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec', '~> 3'
   s.post_install_message = <<-eos
 +----------------------------------------------------------------------------+
-  Thank you for choosing GLMath.
+  Thank you for choosing glmath.
 
   ==========================================================================
   #{GLMath::VERSION} Codename #{GLMath::VERSION_CODENAME}

@@ -6,10 +6,10 @@ module GLMath
       end
 
       def from_angle_axis(angle, axis)
-        angle = angle/2.0
-        n = axis.normalize
+        angle *= 0.5
+        axis = axis.normalize
         sa = Math.sin(angle)
-        new(Math.cos(angle), sa * n.x, sa * n.y, sa * n.z)
+        new(Math.cos(angle), sa * axis.x, sa * axis.y, sa * axis.z)
       end
 
       def identity
@@ -17,7 +17,7 @@ module GLMath
       end
 
       def slerp(q0, q1, t)
-        (q1*q0.inverse).power(t)*q0
+        (q1 * q0.inverse).power(t) * q0
       end
 
       alias_method :I, :identity
@@ -25,7 +25,7 @@ module GLMath
 
     def initialize(w, x, y, z)
       @q = w, x, y, z
-      raise ArgumentError, 'argumnents must be Numeric' unless @q.all? { |e| e.is_a?(Numeric) }
+      raise ArgumentError, 'arguments must be Numeric' unless @q.all? { |e| e.is_a?(Numeric) }
     end
 
     def +(v)
@@ -176,9 +176,10 @@ module GLMath
         when :scalar_vector
           "(#{w}, [#{x}, #{y}, #{z}])"
         when :vertical
-          "#{w}\n#{x}\n#{y}\n#{z}"
+          "w=#{w}\nx=#{x}\ny=#{y}\nz=#{z}"
+        when :angle_axis
         else
-          "Quaternion[#{w}, #{x}, #{y}, #{z}]"
+          "Quaternion[w=#{w}, x=#{x}, y=#{y}, z=#{z}]"
       end
     end
 

@@ -31,6 +31,10 @@ module GLMath
                     0.0, 1.0, 0.0,
                     x,   y,   1.0)
       end
+
+      def from_euler_angle(x:, y:, z:)
+        # TODO
+      end
     end
 
     include Matrix
@@ -76,6 +80,26 @@ module GLMath
                   @m[3], @m[4], @m[5], 0.0,
                   @m[6], @m[7], @m[8], 0.0,
                   0.0,   0.0,   0.0,   1.0)
+    end
+
+    def to_axis_angle
+      # TODO
+    end
+
+    def orthonormalize
+      # TODO
+    end
+
+    def eigen_decomposition()
+      # TODO
+    end
+
+    def to_euler_angle
+      # TODO
+    end
+
+    def slerp
+      # TODO
     end
 
     alias_method :det, :determinant
