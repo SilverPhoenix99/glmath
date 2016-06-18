@@ -5,6 +5,22 @@ module GLMath
       def size
         4
       end
+
+      def X
+        new(1.0, 0.0, 0.0, 0.0)
+      end
+
+      def Y
+        new(0.0, 1.0, 0.0, 0.0)
+      end
+
+      def Z
+        new(0.0, 0.0, 1.0, 0.0)
+      end
+
+      def W
+        new(0.0, 0.0, 0.0, 1.0)
+      end
     end
 
     include Vector

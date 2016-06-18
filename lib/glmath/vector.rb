@@ -51,7 +51,7 @@ module GLMath
     end
 
     def angle(other)
-      raise ArgumentError unless self.class === other
+      raise ArgumentError, "argument must be a #{self.class}" unless self.class === other
       Math.acos(dot(other) / Math.sqrt(square_norm * other.square_norm))
     end
 

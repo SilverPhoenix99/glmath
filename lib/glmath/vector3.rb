@@ -1,13 +1,25 @@
 module GLMath
   class Vector3
 
+    include Vector
+
     class << self
       def size
         3
       end
-    end
 
-    include Vector
+      def X
+        new(1.0, 0.0, 0.0)
+      end
+
+      def Y
+        new(0.0, 1.0, 0.0)
+      end
+
+      def Z
+        new(0.0, 0.0, 1.0)
+      end
+    end
 
     def *(v)
       case v
@@ -28,7 +40,8 @@ module GLMath
     end
 
     def outer_product(v)
-      self.class.new(@v[1] * v.z - @v[2] * v.y, @v[2] * v.x - @v[0] * v.z, @v[0] * v.y - @v[1] * v.x)
+      v = v.instance_variable_get(:@v)
+      self.class.new(@v[2] * v[1] - @v[1] * v[2], @v[0] * v[2] - @v[2] * v[0], @v[1] * v[0] - @v[0] * v[1])
     end
 
     def z
