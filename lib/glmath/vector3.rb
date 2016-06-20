@@ -41,7 +41,7 @@ module GLMath
 
     def outer_product(v)
       v = v.instance_variable_get(:@v)
-      self.class.new(@v[2] * v[1] - @v[1] * v[2], @v[0] * v[2] - @v[2] * v[0], @v[1] * v[0] - @v[0] * v[1])
+      self.class.new(@v[1]*v[2] - @v[2]*v[1], @v[2]*v[0] - @v[0]*v[2], @v[0]*v[1] - @v[1]*v[0])
     end
 
     def z

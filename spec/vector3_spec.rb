@@ -146,8 +146,28 @@ RSpec.describe Vector3 do
 
   describe 'outer_product' do
 
-    it 'cross product with itself is a zero vector' do
-      (subject.cross(subject)).should == Vector3.zero
+    describe 'with itself' do
+      it 'is a zero vector' do
+        (subject.cross(subject)).should == Vector3.zero
+      end
+    end
+
+    describe 'with symmetric' do
+      it 'gives a zero vector' do
+        (subject.cross(-subject)).should == Vector3.zero
+      end
+    end
+
+    describe 'X axis with Z axis' do
+      it 'gives Y axis' do
+        expect(Vector3.X.cross(Vector3.Z)).to eq(Vector3.Y)
+      end
+    end
+
+    describe 'Z axis with X axis' do
+      it 'gives negative Y axis' do
+        expect(Vector3.Z.cross(Vector3.X)).to eq(-Vector3.Y)
+      end
     end
 
   end
