@@ -74,6 +74,15 @@ module GLMath
       define_method "#{m}=", ->(v) { @q[i] = v }
     end
 
+    def angle
+      Math.acos(@q[0]) * 2.0
+    end
+
+    def axis
+      sa = 1.0 / Math.sqrt(1.0 - @q[0]*@q[0])
+      Vector3[@q[1]*sa, @q[2]*sa, @q[3]*sa]
+    end
+
     def coerce(v)
       case v
         when Numeric then return Scalar.new(v), self
@@ -122,10 +131,6 @@ module GLMath
       [x, y, z]
     end
 
-    def inspect
-      "Quaternion[#{w}, #{x}, #{y}, #{z}]"
-    end
-
     def inverse
       conjugate / norm
     end
@@ -155,12 +160,10 @@ module GLMath
       (log*p).exp
     end
 
-    def real
-      w
-    end
-
     def rotate(v3)
-      Vector3[*(self * Quaternion[0.0, *v3] * inverse).to_a[1..-1]]
+      v3 = Quaternion[0.0, *v3]
+      v3 = self * v3 * conjugate
+      Vector3[v3.x, v3.y, v3.z]
     end
 
     def squared_norm
@@ -171,15 +174,18 @@ module GLMath
       @q.dup
     end
 
+    def to_angle_axis
+      [angle, axis]
+    end
+
     def to_s(notation = nil)
       case notation
-        when :scalar_vector
-          "(#{w}, [#{x}, #{y}, #{z}])"
+        when :scalar
+          "Quaternion(w=#{w}, x=#{x}, y=#{y}, z=#{z})"
         when :vertical
           "w=#{w}\nx=#{x}\ny=#{y}\nz=#{z}"
-        when :angle_axis
         else
-          "Quaternion[w=#{w}, x=#{x}, y=#{y}, z=#{z}]"
+          "Quaternion(#{w}, [#{x}, #{y}, #{z}])"
       end
     end
 
@@ -200,13 +206,16 @@ module GLMath
               0, 0, 0, 1]
     end
 
-    alias_method :conj,  :conjugate
-    alias_method :conj!, :conjugate
-    alias_method :cross, :cross_product
-    alias_method :dot,   :dot_product
-    alias_method :im,    :imaginary
-    alias_method :imag,  :imaginary
-    alias_method :inv,   :inverse
-    alias_method :re,    :real
+    alias_method :conj,    :conjugate
+    alias_method :conj!,   :conjugate
+    alias_method :cross,   :cross_product
+    alias_method :dot,     :dot_product
+    alias_method :im,      :imaginary
+    alias_method :imag,    :imaginary
+    alias_method :inspect, :to_s
+    alias_method :inv,     :inverse
+    alias_method :length,  :norm
+    alias_method :re,      :w
+    alias_method :real,    :w
   end
 end

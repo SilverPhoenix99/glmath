@@ -6,7 +6,6 @@ RSpec.describe Vector3 do
   it { Vector3.zero.size.should == 3 }
 
   describe '#initialize' do
-
     it "doesn't expect more than 3 parameters" do
       expect { Vector3.new(1, 2, 3, 4) }.to raise_error(ArgumentError)
     end
@@ -18,15 +17,12 @@ RSpec.describe Vector3 do
     it 'expects 3 Numeric parameters' do
       expect { Vector3.new(1.0, 2.0, 3) }.not_to raise_error
     end
-
   end
 
-  describe 'zero vector' do
-
+  describe '#zero' do
     it 'creates a zero vector' do
-      Vector2.zero.should == Vector2[0.0, 0.0]
+      expect(Vector3.zero).to eq(Vector3[0.0, 0.0, 0.0])
     end
-
   end
 
   subject { Vector3.new(1.0, 2.0, 3.0) }
@@ -85,7 +81,6 @@ RSpec.describe Vector3 do
   end
 
   describe 'division' do
-
     it 'accepts a Numeric' do
       (subject / 2.0).should == Vector3[subject.x / 2.0, subject.y / 2.0, subject.z / 2.0]
     end
@@ -93,83 +88,68 @@ RSpec.describe Vector3 do
     it "doesn't accept something other than a Numeric" do
       expect { subject / :a }.to raise_error(ArgumentError)
     end
-
   end
 
-  describe 'symmetric' do
-
+  describe '#symmetric' do
     it { (-subject).should == Vector3[-subject.x, -subject.y, -subject.z] }
-
   end
 
-  describe 'inner_product' do
-
-    it 'accepts a Vector2' do
+  describe '#inner_product' do
+    it 'accepts a Vector3' do
       (subject.dot(subject)).should == 14
     end
 
-    it "doesn't accept anything other than a Vector2" do
+    it "doesn't accept anything other than a Vector3" do
       expect { subject.dot :a }.to raise_error(ArgumentError)
     end
-
   end
 
-  describe 'magnitude' do
-
+  describe '#magnitude' do
     it { subject.magnitude.should == Math.sqrt(14) }
-
   end
 
-  describe 'angle' do
-
+  describe '#angle' do
     it { subject.angle(subject) == 0 }
-
   end
 
-  describe 'normalize' do
-
+  describe '#normalize' do
     it { subject.normalize.should == Vector3[subject.x / Math.sqrt(14), subject.y / Math.sqrt(14), subject.z / Math.sqrt(14)] }
-
   end
 
   describe 'expansion' do
-
     it 'accepts a Numeric' do
-      (subject.expand(4)).should == Vector4.new(1.0, 2.0, 3.0, 4)
+      expect(subject.expand(4)).to eq(Vector4.new(1.0, 2.0, 3.0, 4))
     end
 
     it "doesn't accept anything other than a Numeric" do
       expect { (subject.expand(:a)) }.to raise_error(ArgumentError)
     end
-
   end
 
-  describe 'outer_product' do
+  describe '#outer_product' do
 
     describe 'with itself' do
-      it 'is a zero vector' do
-        (subject.cross(subject)).should == Vector3.zero
+      it 'should give a zero vector' do
+        expect(subject.cross(subject)).to eq(Vector3.zero)
       end
     end
 
     describe 'with symmetric' do
       it 'gives a zero vector' do
-        (subject.cross(-subject)).should == Vector3.zero
+        expect(subject.cross(-subject)).to eq(Vector3.zero)
       end
     end
 
-    describe 'X axis with Z axis' do
-      it 'gives Y axis' do
-        expect(Vector3.X.cross(Vector3.Z)).to eq(Vector3.Y)
+    describe ': Z cross X' do
+      it 'should give Y' do
+        expect(Vector3.Z.cross(Vector3.X)).to eq(Vector3.Y)
       end
     end
 
-    describe 'Z axis with X axis' do
-      it 'gives negative Y axis' do
-        expect(Vector3.Z.cross(Vector3.X)).to eq(-Vector3.Y)
+    describe ': X cross Z' do
+      it 'should give -Y' do
+        expect(Vector3.X.cross(Vector3.Z)).to eq(-Vector3.Y)
       end
     end
-
   end
-
 end
