@@ -30,18 +30,18 @@ module GLMath
                          v[1] * x + v[4] * y + v[7] * z,
                          v[2] * x + v[5] * y + v[8] * z)
         else
-          raise ArgumentError
+          raise ArgumentError, "no implicit conversion of #{v.class} into Numeric or Matrix3"
       end
     end
 
     def expand(w)
-      raise ArgumentError unless w.is_a? Numeric
+      raise ArgumentError, "no implicit conversion of #{v.class} into Numeric" unless w.is_a? Numeric
       Vector4.new(*(@v + [w]))
     end
 
     def outer_product(v)
       v = v.instance_variable_get(:@v)
-      self.class.new(@v[2] * v[1] - @v[1] * v[2], @v[0] * v[2] - @v[2] * v[0], @v[1] * v[0] - @v[0] * v[1])
+      self.class.new(@v[1]*v[2] - @v[2]*v[1], @v[2]*v[0] - @v[0]*v[2], @v[0]*v[1] - @v[1]*v[0])
     end
 
     def z
@@ -49,7 +49,7 @@ module GLMath
     end
 
     def xy
-      Vector2.new(*@v[0, 2])
+      Vector2.new(@v[0], @v[1])
     end
 
     def xz
@@ -57,7 +57,7 @@ module GLMath
     end
 
     def yz
-      Vector2.new(*@v[1, 2])
+      Vector2.new(@v[1], @v[2])
     end
 
     alias_method :cross_product, :outer_product

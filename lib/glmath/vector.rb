@@ -20,11 +20,11 @@ module GLMath
       @v = args
     end
 
-    %w'+ -'.each do |s|
-      define_method(s, ->(v) do
-        raise ArgumentError unless self.class === v
+    %w'+ -'.each do |sign|
+      define_method(sign, ->(v) do
+        raise ArgumentError, "no implicit conversion of #{v.class} into #{self.class}" unless self.class === v
         v = v.instance_variable_get(:@v)
-        self.class.new(*[@v, v].transpose.map!{ |a, b| a.send(s, b) })
+        self.class.new(*@v.zip(v).map! { |a, b| a.send(sign, b) })
       end)
     end
 
@@ -51,7 +51,7 @@ module GLMath
     end
 
     def angle(other)
-      raise ArgumentError, "argument must be a #{self.class}" unless self.class === other
+      raise ArgumentError, "no implicit conversion of #{v.class} into #{self.class}" unless self.class === other
       Math.acos(dot(other) / Math.sqrt(square_norm * other.square_norm))
     end
 
@@ -87,9 +87,9 @@ module GLMath
     end
 
     def inner_product(v)
-      raise ArgumentError unless self.class === v
+      raise ArgumentError, "no implicit conversion of #{v.class} into #{self.class}" unless self.class === v
       v = v.instance_variable_get(:@v)
-      [@v, v].transpose.map!{ |a, b| a * b }.reduce(&:+)
+      @v.zip(v).map! { |a, b| a * b }.reduce(&:+)
     end
 
     def magnitude
