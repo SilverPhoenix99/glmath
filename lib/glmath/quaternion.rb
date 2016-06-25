@@ -7,7 +7,6 @@ module GLMath
 
       def from_angle_axis(angle, axis)
         angle *= 0.5
-        axis = axis.normalize
         sa = Math.sin(angle)
         new(Math.cos(angle), sa * axis.x, sa * axis.y, sa * axis.z)
       end
@@ -125,6 +124,11 @@ module GLMath
       ew = Math.exp(w)
       s = ew * Math.sin(a) / a
       self.class.new(ew * Math.cos(a), x * s, y * s, z * s)
+    end
+
+    def freeze
+      @q.freeze
+      super
     end
 
     def imaginary

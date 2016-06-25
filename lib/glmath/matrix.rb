@@ -211,6 +211,11 @@ module GLMath
       other.is_a?(self.class) && @m.eql?(other.to_a)
     end
 
+    def freeze
+      @m.freeze
+      super
+    end
+
     def hash
       @m.hash
     end

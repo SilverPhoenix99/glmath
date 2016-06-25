@@ -12,21 +12,4 @@ Gem::Specification.new do |s|
   s.require_paths = %w'lib'
   s.files         = Dir['{lib/**/*.rb,*.md}']
   s.add_development_dependency 'rspec', '~> 3'
-  s.post_install_message = <<-eos
-+----------------------------------------------------------------------------+
-  Thank you for choosing glmath.
-
-  ==========================================================================
-  #{GLMath::VERSION} Codename #{GLMath::VERSION_CODENAME}
-
-  Changes:
-    - First build.
-  ==========================================================================
-
-  If you find any bugs, please report them on
-    https://github.com/SilverPhoenix99/glmath/issues
-
-+----------------------------------------------------------------------------+
-eos
-
 end

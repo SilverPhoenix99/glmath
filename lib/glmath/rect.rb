@@ -3,7 +3,15 @@ module GLMath
     attr_accessor :x, :y, :width, :height
 
     def initialize(x = 0, y = 0, width = 0, height = 0)
-      self.x, self.y, self.width , self.height = x, y, width, height
+      @x, @y, @width, @height = x, y, width, height
+    end
+
+    def freeze
+      @x.freeze
+      @y.freeze
+      @width.freeze
+      @height.freeze
+      super
     end
 
     def [](v)

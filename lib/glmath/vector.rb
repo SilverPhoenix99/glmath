@@ -82,6 +82,11 @@ module GLMath
       @v.eql? other.instance_variable_get(:@v)
     end
 
+    def freeze
+      @v.freeze
+      super
+    end
+
     def hash
       @v.hash
     end
