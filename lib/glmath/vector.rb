@@ -132,10 +132,6 @@ module GLMath
       @v.dup
     end
 
-    def to_ary
-      to_a
-    end
-
     def to_s(notation = nil)
       case notation
         when nil        then inspect
@@ -156,5 +152,6 @@ module GLMath
     alias_method :map,           :collect
     alias_method :square_length, :square_magnitude
     alias_method :square_norm,   :square_magnitude
+    alias_method :to_ary,        :to_a
   end
 end
