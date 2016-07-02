@@ -125,19 +125,15 @@ module GLMath
     end
 
     def self.from_center(cx, cy, width, height)
-      new do
-        self.x, self.y, self.width, self.height = cx - width/2, cy - height/2, width, height
-      end
+      new(cx - width/2, cy - height/2, width, height)
     end
 
+    def self.square(x, y, size)
+      new(x, y, size, size)
+    end
+l
     alias_method :to_ary, :to_a
     alias_method :inside?, :include?
 
-  end
-
-  class Square < Rect
-    def initialize(x, y, size)
-      super(x, y, size, size)
-    end
   end
 end

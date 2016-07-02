@@ -1,21 +1,24 @@
 module GLMath
   class Vector2
 
+    include Vector
+
     class << self
       def size
         2
       end
 
-      def X
+      def x
         new(1.0, 0.0)
       end
 
-      def Y
+      def y
         new(0.0, 1.0)
       end
     end
 
-    include Vector
+    X = x.freeze
+    Y = y.freeze
 
     def *(v)
       case v

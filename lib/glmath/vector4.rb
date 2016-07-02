@@ -1,29 +1,34 @@
 module GLMath
   class Vector4
 
+    include Vector
+
     class << self
       def size
         4
       end
 
-      def X
+      def x
         new(1.0, 0.0, 0.0, 0.0)
       end
 
-      def Y
+      def y
         new(0.0, 1.0, 0.0, 0.0)
       end
 
-      def Z
+      def z
         new(0.0, 0.0, 1.0, 0.0)
       end
 
-      def W
+      def w
         new(0.0, 0.0, 0.0, 1.0)
       end
     end
 
-    include Vector
+    X = x.freeze
+    Y = y.freeze
+    Z = z.freeze
+    W = w.freeze
 
     def *(v)
       case v
