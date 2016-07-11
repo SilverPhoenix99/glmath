@@ -1,12 +1,11 @@
 module GLMath
   class Vector3
 
+    SIZE = 3
+
     include Vector
 
     class << self
-      def size
-        3
-      end
 
       def x
         new(1.0, 0.0, 0.0)

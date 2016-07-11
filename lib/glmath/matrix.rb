@@ -1,4 +1,3 @@
-
 module GLMath
   module Matrix
     module ClassMethods
@@ -29,10 +28,6 @@ module GLMath
         scalar(1.0)
       end
 
-      def length
-        dim * dim
-      end
-
       def rows(*args)
         raise ArgumentError, "wrong number of arguments #{args.length} for #{dim}" unless args.length == dim
         raise ArgumentError, "wrong array size. All arrays must have size #{dim}" unless args.all? { |arg| arg.length == dim }
@@ -44,15 +39,20 @@ module GLMath
       end
 
       def zero
-        new(*[0.0]*(dim*dim))
+        new(*[0.0] * (dim * dim))
       end
 
-      alias_method :I,    :identity
+      alias_method :i,    :identity
       alias_method :unit, :identity
     end
 
     def self.included(base)
+      base.define_singleton_method(:length, ->() { base.const_get(:LENGTH) })
+      base.define_singleton_method(:dimension, ->() { base.const_get(:DIMENSION) })
       base.extend ClassMethods
+      base.const_set(:Identity,  base.identity.freeze)
+      base.const_set(:I,    base.const_get(:Identity))
+      base.const_set(:Unit, base.const_get(:Identity))
     end
 
     def initialize(*args)
@@ -214,10 +214,6 @@ module GLMath
     def freeze
       @m.freeze
       super
-    end
-
-    def hash
-      @m.hash
     end
 
     def hermitian?

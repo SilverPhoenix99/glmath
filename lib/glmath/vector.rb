@@ -11,7 +11,9 @@ module GLMath
     end
 
     def self.included(base)
+      base.define_singleton_method(:size, ->() { base.const_get(:SIZE) })
       base.extend ClassMethods
+      base.const_set(:Zero, base.zero.freeze)
     end
 
     def initialize(*args)
@@ -87,10 +89,6 @@ module GLMath
       super
     end
 
-    def hash
-      @v.hash
-    end
-
     def inner_product(v)
       raise ArgumentError, "no implicit conversion of #{v.class} into #{self.class}" unless self.class === v
       v = v.instance_variable_get(:@v)
@@ -152,6 +150,6 @@ module GLMath
     alias_method :map,           :collect
     alias_method :square_length, :square_magnitude
     alias_method :square_norm,   :square_magnitude
-    alias_method :to_ary,        :to_a
+    # alias_method :to_ary,        :to_a
   end
 end

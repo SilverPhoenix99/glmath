@@ -1,10 +1,10 @@
 module GLMath
   class Matrix3
 
+    DIMENSION = 3
+    LENGTH    = 9
+
     class << self
-      def dimension
-        3
-      end
 
       def rotation(angle, axis, homogenous = false)
         n = axis.normalize

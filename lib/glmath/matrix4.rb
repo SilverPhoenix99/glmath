@@ -1,11 +1,11 @@
 module GLMath
   # Left Handed
   class Matrix4
-    class << self
-      def dimension
-        4
-      end
 
+    DIMENSION = 4
+    LENGTH    = 16
+
+    class << self
       def look_at(eye, center, up)
         f = (center - eye).normalize!
         s = f.cross(up).normalize!

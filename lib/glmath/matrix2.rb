@@ -1,11 +1,10 @@
 module GLMath
   class Matrix2
 
-    class << self
-      def dimension
-        2
-      end
+    DIMENSION = 2
+    LENGTH    = 4
 
+    class << self
       #conter-clockwise rotation
       def rotation(theta, homogenous = false)
         s, c = Math.sin(theta), Math.cos(theta)

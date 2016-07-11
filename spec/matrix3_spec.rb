@@ -6,9 +6,8 @@ RSpec.describe Matrix3 do
   let(:vector3)  { Vector3.new(1.0, 2.0, 3.0) }
   let(:det_zero) { Matrix3.new(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0) }
 
-  describe "initialize" do
-
-    it "accepts 9 Numeric arguments" do
+  describe '#initialize' do
+    it 'accepts 9 Numeric arguments' do
       expect { Matrix3.new(*9.times.to_a) }.not_to raise_error
     end
 
@@ -24,21 +23,20 @@ RSpec.describe Matrix3 do
       expect { Matrix3.new(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, :a) }.to raise_error ArgumentError
     end
 
-    it "works as an array initializer" do
-      should == Matrix3[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 8.0]
+    it 'works as an array initializer' do
+      expect(Matrix3[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]).to eq det_zero
     end
-
   end
 
-  describe "build" do
+  describe '::build' do
     let(:m) { Matrix3.new(*9.times.map { |i| i + 1 }) }
 
     it { Matrix3.build { |r, c| r * Matrix3.dim + c + 1 }.should == m }
   end
 
-  describe "column" do
+  describe 'column' do
 
-    it "accepts 3 arrays of size 3" do
+    it 'accepts 3 arrays of size 3' do
       expect { Matrix3.columns([1.0, 2.0, 3.0], [3.0, 4.0, 5.0], [5.0, 6.0, 7.0]) }.to_not raise_error
     end
 
@@ -51,7 +49,7 @@ RSpec.describe Matrix3 do
       expect { Matrix3.columns([1.0, 2.0, 5.0], [3.0, 4.0, 5.0], [5.0, 6.0]) }.to raise_error(ArgumentError)
     end
 
-    it "accepts an Integer between 0 and 2" do
+    it 'accepts an Integer between 0 and 2' do
       subject.column(0).should == [subject[0, 0], subject[1, 0], subject[2, 0]]
       subject.column(1).should == [subject[0, 1], subject[1, 1], subject[2, 1]]
       subject.column(2).should == [subject[0, 2], subject[1, 2], subject[2, 2]]
@@ -71,7 +69,7 @@ RSpec.describe Matrix3 do
 
   end
 
-  describe "diagonal" do
+  describe '::diagonal' do
     it { Matrix3.diagonal(1.0, 2.0, 3.0).should == Matrix3.new(1.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 3.0) }
 
     it { subject.diagonal.should == [subject[0, 0], subject[1, 1], subject[2, 2]] }
@@ -82,7 +80,7 @@ RSpec.describe Matrix3 do
     it { should_not be_diagonal }
   end
 
-  describe "dimension" do
+  describe '::dimension' do
     it { Matrix3.dimension.should == 3 }
     it { Matrix3.dim.should == Matrix3.dimension }
     it { Matrix3.zero.dimension.should == 3 }
@@ -90,20 +88,20 @@ RSpec.describe Matrix3 do
     it { subject.dimension.should == 3 }
   end
 
-  describe "identity" do
+  describe '::identity' do
     it { Matrix3.identity.should == Matrix3.new(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0) }
   end
 
-  describe "length" do
+  describe '::length' do
 
     it { Matrix3.length.should == 9 }
     it { subject.length.should == 9 }
 
   end
 
-  describe "row" do
+  describe 'row' do
 
-    it "accepts 3 arrays of size 3" do
+    it 'accepts 3 arrays of size 3' do
       expect { Matrix3.rows([1.0, 2.0, 3.0], [3.0, 4.0, 5.0], [5.0, 6.0, 7.0]) }.to_not raise_error
     end
 
@@ -116,7 +114,7 @@ RSpec.describe Matrix3 do
       expect { Matrix3.rows([1.0, 2.0, 5.0, 6.0], [3.0, 4.0, 6.0], [5.0, 6.0, 7.0]) }.to raise_error(ArgumentError)
     end
 
-    it "accepts an Integer between 0 and 2" do
+    it 'accepts an Integer between 0 and 2' do
       subject.row(0).should == [subject[0, 0], subject[0, 1], subject[0, 2]]
       subject.row(1).should == [subject[1, 0], subject[1, 1], subject[1, 2]]
       subject.row(2).should == [subject[2, 0], subject[2, 1], subject[2, 2]]
@@ -136,7 +134,7 @@ RSpec.describe Matrix3 do
 
   end
 
-  describe "scalar" do
+  describe 'scalar' do
 
     it "should only fill the diagonal with the same value" do
       Matrix3.scalar(3.0).should == Matrix3.new(3.0, 0.0, 0.0,
@@ -150,7 +148,7 @@ RSpec.describe Matrix3 do
 
   end
 
-  describe "zero" do
+  describe "::zero" do
 
     it "creates a Matrix3 filled only with zeros" do
       Matrix3.zero.should == Matrix3.new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
@@ -349,35 +347,49 @@ RSpec.describe Matrix3 do
     it { expect { subject.each_with_index(:something_else).to_a }.to raise_error(ArgumentError) }
   end
 
-  describe "hermitian" do
+  describe '#hermitian?' do
 
-    let(:hermitian) { Matrix3[1, -1i, 1i, 1] }
-    it { should_not be_hermitian }
-    it { hermitian.should be_hermitian }
+    let(:hermitian) { Matrix3[-1, 1 - 2i, 0, 1 + 2i, 0, -1i, 0, 1i, 1] }
 
-  end
+    it do
+      expect(subject.hermitian?).to be false
+    end
 
-  describe "imaginary" do
-
-    it { subject.imaginary.should == Matrix3.zero }
-
-    it { Matrix3.new(4+1i, 3+2i, 2+3i, 1+4i).imaginary.should == Matrix3.new(1, 2, 3, 4) }
+    it do
+      expect(hermitian.hermitian?).to be true
+    end
 
   end
 
-  describe "inverse" do
-    it { subject.inverse.should == subject.adjugate * (1.0 / subject.determinant) }
+  describe '#imaginary' do
+    it 'has no imaginary part' do
+      subject.imaginary.should == Matrix3.zero
+    end
+
+    it 'has imaginary part' do
+      expect(Matrix3.new(4 + 1i, 3 + 2i, 2 + 3i, 1 + 4i, 5i, 6i, 7i, 8i, 9i).
+          imaginary).to eq Matrix3.new(1, 2, 3, 4, 5, 6, 7, 8, 9)
+    end
   end
 
-  describe "lower_triangular" do
-    it { should_not be_lower_triangular }
-
-    it { Matrix3.new(1, 2, 0, 4).should_not be_lower_triangular }
-
-    it { Matrix3.new(1, 0, 3, 4).should be_lower_triangular }
+  # FIXME Precision
+  describe '#inverse' do
+    it do
+      expect(subject.inverse).to eq subject.adjugate * (1.0 / subject.determinant)
+    end
   end
 
-  describe "lup" do
+  describe '#lower_triangular?' do
+    it "isn't lower triangular" do
+      expect(subject.lower_triangular?).to be false
+    end
+
+    it 'is lower triangular' do
+      expect(Matrix3::Identity.lower_triangular?).to be true
+    end
+  end
+
+  describe 'lup' do
 
     let(:lup) { subject.lup }
     let(:lm) { lup[0] }
@@ -390,42 +402,61 @@ RSpec.describe Matrix3 do
 
   end
 
-  describe "normal" do
-    it { should_not be_normal }
+  describe '#normal?' do
+    it do
+      expect(subject).not_to be_normal
+    end
 
-    it { Matrix3.new(1i, 0, 0, 3-5i).should be_normal }
+    it do
+      expect(Matrix3.new(0, -0.8, -0.6, 0.8, -0.36, 0.48, 0.6, 0.48, -0.64)).to be_normal
+    end
   end
 
-  describe "permutation" do
-    it { should_not be_permutation }
-    it { Matrix3.identity.should be_permutation }
-    it { Matrix3.new(0.0, 1.0, 1.0, 0.0).should be_permutation }
+  describe '#permutation?' do
+    it do
+      expect(subject.permutation?).to be false
+    end
+
+    it do
+      expect(Matrix3::Identity.permutation?).to be true
+    end
+
+    it do
+      expect(Matrix3.new(0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0).permutation?).to be true
+    end
   end
 
-  describe "real" do
-
-    it { should be_real }
-
-    it { Matrix3.new(1i, 0, 0, 0).should_not be_real }
-
-    it { Matrix3.new(1+1i, -2-2i, 3+3i, 4-4i).real.should == Matrix3.new(1, -2, 3, 4) }
-
+  describe '#real' do
+    it do
+      expect(Matrix3.new(1+1i, -2-2i, 3+3i, 4-4i, 0, 0, 0, 0, 0).real).
+          to eq Matrix3.new(1, -2, 3, 4, 0, 0, 0, 0, 0)
+    end
   end
 
-  describe "round" do
+  describe '#real?' do
+    it do
+      expect(subject).to be_real
+    end
+
+    it do
+      expect(Matrix3.new(1i, 0, 0, 0, 0, 0, 0, 0, 0)).not_to be_real
+    end
+  end
+
+  describe 'round' do
     it { subject.round.should == subject }
 
     it { Matrix3.new(1.5, 2.5, 3.5, 4.5).round.should == Matrix3.new(2, 3, 4, 5) }
   end
 
-  describe "singular" do
+  describe 'singular' do
 
     it { should_not be_singular }
 
     it { Matrix3.new(1, 1, 1, 1).should be_singular }
   end
 
-  describe "symmetric" do
+  describe 'symmetric' do
 
     it { should_not be_symmetric }
 
@@ -436,22 +467,19 @@ RSpec.describe Matrix3 do
     it { Matrix3.new(1, 2, 2, 1).should be_symmetric }
   end
 
-  describe "trace" do
+  describe 'trace' do
     it { subject.trace.should == subject[0, 0] + subject[1, 1] }
   end
 
-  describe "transpose" do
+  describe 'transpose' do
 
     it do
-      subject.transpose.should == Matrix3[subject[0, 0],
-                                          subject[1, 0],
-                                          subject[0, 1],
-                                          subject[1, 1]]
+      subject.transpose.should == Matrix3::I
     end
 
   end
 
-  describe "upper_triangular" do
+  describe 'upper_triangular' do
     it { should_not be_upper_triangular }
 
     it { Matrix3.new(1, 0, 3, 4).should_not be_upper_triangular }

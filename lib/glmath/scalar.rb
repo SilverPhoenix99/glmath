@@ -1,5 +1,8 @@
 module GLMath
   class Scalar
+    def self.[](n)
+      new(n)
+    end
 
     def initialize(n)
       raise ArgumentError, 'Must be numeric' unless n.is_a?(Numeric)

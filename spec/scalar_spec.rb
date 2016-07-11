@@ -17,20 +17,37 @@ RSpec.describe Scalar do
     let(:v2) { Vector2[3.0, 4.0] }
     let(:v3) { Vector3[3.0, 4.0, 1.5] }
     let(:v4) { Vector4[3.0, 4.0, 1.5, -2.0] }
-    let(:m2) { Matrix2.I }
-    let(:m3) { Matrix3.I }
-    let(:m4) { Matrix4.I }
+    let(:m2) { Matrix2::I }
+    let(:m3) { Matrix3::I }
+    let(:m4) { Matrix4::I }
 
     it 'only expects Vector or Matrix' do
       expect { scalar * n }.to raise_error(ArgumentError)
     end
 
-    it { (scalar * v2).should eq(n * v2) }
-    it { (scalar * v3).should eq(n * v3) }
-    it { (scalar * v4).should eq(n * v4) }
-    it { (scalar * m2).should eq(n * m2) }
-    it { (scalar * m3).should eq(n * m3) }
-    it { (scalar * m4).should eq(n * m4) }
+    it 'should multiply by a Vector2' do
+      expect(scalar * v2).to eq(n * v2)
+    end
+
+    it 'should multiply by a Vector3'do
+      expect(scalar * v3).to eq(n * v3)
+    end
+
+    it 'should multiply by a Vector3' do
+      expect(scalar * v4).to eq(n * v4)
+    end
+
+    it 'should multiply by a Matrix2' do
+      expect(scalar * m2).to eq(n * m2)
+    end
+
+    it 'should multiply by a Matrix3' do
+      expect(scalar * m3).to eq(n * m3)
+    end
+
+    it 'should multiply by a Matrix4' do
+      expect(scalar * m4).to eq(n * m4)
+    end
 
   end
 
@@ -50,9 +67,30 @@ RSpec.describe Scalar do
       expect { scalar / Vector2[3.0, 4.0] }.to raise_error(ArgumentError)
     end
 
-    it { (scalar / m2).should eq(n * m2.inverse) }
-    it { (scalar / m3).should eq(n * m3.inverse) }
-    it { (scalar / m4).should eq(n * m4.inverse) }
+    it  'should divide by a Matrix2' do
+      expect(scalar / m2).to eq(n * m2.inverse)
+    end
 
+    it 'should divide by a Matrix2' do
+      expect(scalar / m3).to eq(n * m3.inverse)
+    end
+
+    it 'should divide by a Matrix2' do
+      expect(scalar / m4).to eq(n * m4.inverse)
+    end
+
+  end
+
+  describe '#==' do
+    let(:n) { 2 }
+    let(:scalar) { Scalar.new(2) }
+
+    it 'should be equal to 2' do
+      expect(scalar == 2).to be true
+    end
+
+    it "shouldn't be equal to anything than 2 or Scalar.new(2)" do
+      expect(scalar == 'abc').to be false
+    end
   end
 end

@@ -1,13 +1,11 @@
 module GLMath
   class Vector2
 
+    SIZE = 2
+
     include Vector
 
     class << self
-      def size
-        2
-      end
-
       def x
         new(1.0, 0.0)
       end
@@ -34,7 +32,7 @@ module GLMath
     def expand(*args)
       args.flatten!
       case
-        when args.length == 1 && args.is_a?(Vector2)
+        when args.length == 1 && args[0].is_a?(Vector2)
           Vector4.new(*(@v + args[0].to_a))
         when args.length == 1 && args[0].is_a?(Numeric)
           Vector3.new(*(@v + args))

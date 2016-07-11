@@ -2,8 +2,12 @@ require_relative 'spec_helper'
 
 RSpec.describe Vector4 do
 
-  it { Vector4.size.should == 4 }
-  it { Vector4.zero.size.should == 4 }
+  it do
+    Vector4.size.should == 4
+  end
+  it do
+    Vector4.zero.size.should == 4
+  end
 
   describe '#initialize' do
 
