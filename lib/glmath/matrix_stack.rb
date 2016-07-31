@@ -2,7 +2,7 @@ module GLMath
   class MatrixStack
 
     def initialize
-      @stack = [Matrix4.I]
+      @stack = [Matrix4::I]
     end
 
     %w'* - +'.each do |m|

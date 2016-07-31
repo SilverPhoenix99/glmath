@@ -18,14 +18,14 @@ module GLMath
       def slerp(q0, q1, t)
         (q1 * q0.inverse).power(t) * q0
       end
-
-      alias_method :I, :identity
     end
 
     def initialize(w, x, y, z)
       @q = w, x, y, z
       raise ArgumentError, 'arguments must be Numeric' unless @q.all? { |e| e.is_a?(Numeric) }
     end
+
+    I = identity.freeze
 
     def +(v)
       case v
