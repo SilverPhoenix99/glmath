@@ -47,7 +47,7 @@ module GLMath
     end
 
     def load_identity
-      load(Matrix4.I)
+      load(Matrix4::I)
     end
 
     def look_at(eye, center, up)

@@ -48,7 +48,6 @@ RSpec.describe Scalar do
     it 'should multiply by a Matrix4' do
       expect(scalar * m4).to eq(n * m4)
     end
-
   end
 
   describe 'division' do

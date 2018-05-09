@@ -15,3 +15,5 @@ require_relative 'glmath/scalar'
 require_relative 'glmath/quaternion'
 require_relative 'glmath/euler_angle'
 require_relative 'glmath/matrix_stack'
+require_relative 'glmath/geometry/rect'
+
