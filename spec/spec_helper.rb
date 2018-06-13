@@ -1,14 +1,14 @@
-require 'simplecov'
-SimpleCov.start
+#require 'simplecov'
+#SimpleCov.start
 
-require_relative '../lib/glmath'
 require 'rspec'
-# require 'rspec/expectations'
+require 'rspec/expectations'
+require_relative '../lib/glmath'
 
-# RSpec.configure do |config|
-#   config.expect_with(:rspec) do |c|
-#     c.syntax = [:should, :expect]
-#   end
-# end
+ RSpec.configure do |config|
+   config.expect_with(:rspec) do |c|
+     c.syntax = :expect
+   end
+ end
 
 include GLMath

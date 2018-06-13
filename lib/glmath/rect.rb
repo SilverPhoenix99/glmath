@@ -1,38 +1,58 @@
 module GLMath
-  class Rect
-    attr_accessor :x, :y, :width, :height
 
-    def initialize(x = 0, y = 0, width = 0, height = 0)
-      @x, @y, @width, @height = x, y, width, height
+  # Convention: +y axis is down
+  class Rect
+    attr_reader :x, :y, :width, :height
+
+    def self.from_points(p1, p2)
+      px = [p1.x, p2.x].sort
+      py = [p1.y, p2.y].sort
+      x = px.first
+      y = py.first
+      width = px.last - px.first
+      height = py.last - py.first
+
+      new(x: x, y: y, width: width, height: height)
     end
 
-    def freeze
-      @x.freeze
-      @y.freeze
-      @width.freeze
-      @height.freeze
-      super
+    def self.from_center(cx: 0, cy: 0, width: 0, height: 0)
+      new(x: cx - width / 2, y: cy - height / 2, width: width, height: height)
+    end
+
+    def self.square(x: 0, y: 0, size: 0)
+      new(x: x, y: y, width: size, height: size)
+    end
+
+    def initialize(x: 0, y: 0, width: 0, height: 0)
+      @x = x
+      @y = y
+      @width = width
+      @height = height
     end
 
     def [](v)
       send v
     end
 
-    def []=(k, v)
-      send("#{k}=", v)
-    end
-
     def ==(r)
       return false unless r.is_a? Rect
-      %w(x y width height).map{ |v| self[v] == r[v] }.all?{ |v| v }
+      %w(x y width height).all?{ |v| self[v] == r[v] }
     end
 
-    def bottom
+    def top
       y
     end
 
-    def bottom=(v)
-      self.y = v
+    def bottom
+      y + height
+    end
+
+    def left
+      x
+    end
+
+    def right
+      x + width
     end
 
     def center
@@ -40,40 +60,19 @@ module GLMath
     end
 
     def center_x
-      x + width/2
+      x + width / 2
     end
 
     def center_y
-      y + height/2
-    end
-
-    def center=(c)
-      cx, cy = c
-      self.x, self.y = cx - width/2, cy - height/2
+      y + height / 2
     end
 
     def include?(x, y)
       (left..right).include?(x) && (bottom..top).include?(y)
     end
 
-    def left
-      x
-    end
-
-    def left=(v)
-      self.x = v
-    end
-
     def outside?(x, y)
       !include?(x, y)
-    end
-
-    def right
-      x+width
-    end
-
-    def right=(v)
-      self.width = v - x
     end
 
     def to_a
@@ -85,35 +84,11 @@ module GLMath
     end
 
     def perimeter
-      2 * width + 2 * area
-    end
-
-    def diagonals
-      [diagonal_top_left, diagonal_top_right]
-    end
-
-    def diagonal_top_left
-      LineSegment.new(top, left, bottom, right)
-    end
-
-    def diagonal_top_right
-      LineSegment.new(top, right, bottom, left)
-    end
-
-    def diagonal_length
-      Math.sqrt(width ** 2 + height ** 2)
+      2 * (width + height)
     end
 
     def to_s
-      "<Rect #{%w'left bottom width height'.map { |name| "#{name} = #{send(name)}" }.join(', ')}>"
-    end
-
-    def top
-      y + height
-    end
-
-    def top=(v)
-      self.height = v - y
+      "<Rect #{%w'x y width height'.map { |name| "#{name} = #{send(name)}" }.join(', ')}>"
     end
 
     def vertices(format = :strip)
@@ -124,14 +99,6 @@ module GLMath
       end
     end
 
-    def self.from_center(cx, cy, width, height)
-      new(cx - width/2, cy - height/2, width, height)
-    end
-
-    def self.square(x, y, size)
-      new(x, y, size, size)
-    end
-l
     alias_method :to_ary, :to_a
     alias_method :inside?, :include?
 

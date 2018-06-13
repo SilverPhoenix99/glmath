@@ -69,6 +69,14 @@ module GLMath
       end)
     end
 
+    def +@
+      self.class.new(*@m.map(&:+@))
+    end
+
+    def -@
+      self.class.new(*@m.map(&:-@))
+    end
+
     def *(v)
       raise ArgumentError, v.class unless v.is_a?(Numeric)
       self.class.new(*@m.map { |e| e * v })
@@ -222,6 +230,10 @@ module GLMath
 
     def imaginary
       map(&:imaginary)
+    end
+
+    def imaginary?
+      !real?
     end
 
     def inspect

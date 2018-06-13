@@ -1,29 +1,5 @@
 module GLMath
-  class Vector3
-
-    SIZE = 3
-
-    include Vector
-
-    class << self
-
-      def x
-        new(1.0, 0.0, 0.0)
-      end
-
-      def y
-        new(0.0, 1.0, 0.0)
-      end
-
-      def z
-        new(0.0, 0.0, 1.0)
-      end
-    end
-
-    X = x.freeze
-    Y = y.freeze
-    Z = z.freeze
-
+  class Vector3 < Vector(%i{x y z})
     def *(v)
       case v
         when Numeric
@@ -45,22 +21,6 @@ module GLMath
     def outer_product(v)
       v = v.instance_variable_get(:@v)
       self.class.new(@v[1]*v[2] - @v[2]*v[1], @v[2]*v[0] - @v[0]*v[2], @v[0]*v[1] - @v[1]*v[0])
-    end
-
-    def z
-      @v[2]
-    end
-
-    def xy
-      Vector2.new(@v[0], @v[1])
-    end
-
-    def xz
-      Vector2.new(@v[0], @v[2])
-    end
-
-    def yz
-      Vector2.new(@v[1], @v[2])
     end
 
     alias_method :cross_product, :outer_product

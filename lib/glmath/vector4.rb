@@ -1,34 +1,5 @@
 module GLMath
-  class Vector4
-
-    SIZE = 4
-
-    include Vector
-
-    class << self
-
-      def x
-        new(1.0, 0.0, 0.0, 0.0)
-      end
-
-      def y
-        new(0.0, 1.0, 0.0, 0.0)
-      end
-
-      def z
-        new(0.0, 0.0, 1.0, 0.0)
-      end
-
-      def w
-        new(0.0, 0.0, 0.0, 1.0)
-      end
-    end
-
-    X = x.freeze
-    Y = y.freeze
-    Z = z.freeze
-    W = w.freeze
-
+  class Vector4 < Vector(%i{x y z w})
     def *(v)
       case v
         when Numeric
@@ -41,18 +12,6 @@ module GLMath
         else
           raise ArgumentError
       end
-    end
-
-    def z
-      @v[2]
-    end
-
-    def w
-      @v[3]
-    end
-
-    %w(xy xz xw yz yw zw xyz xyw xzw yzw).each do |m|
-      instance_eval("def #{m}() Vector#{m.length}.new(#{m.each_char.to_a.join(', ')}) end")
     end
   end
 end

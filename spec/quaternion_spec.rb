@@ -12,12 +12,12 @@ RSpec.describe Quaternion do
 
   describe '::from_angle_axis' do
     let(:angle) { Math::PI / 2 }
-    let(:axis) { Vector3::X }
+    let(:axis) { Vector3.x }
 
 
     # TODO
     it 'creates a quaternion given an angle and an axis' do
-      expect(Quaternion.from_angle_axis(angle, axis)).to eq Quaternion(Math.cos(angle * 0.5))
+      expect(Quaternion.from_angle_axis(angle, axis)).to eq Quaternion.new(Math.cos(angle * 0.5))
     end
   end
 

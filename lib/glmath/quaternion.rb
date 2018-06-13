@@ -161,7 +161,7 @@ module GLMath
     end
 
     def power(p)
-      (log*p).exp
+      (log * p).exp
     end
 
     def rotate(v3)

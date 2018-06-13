@@ -1,33 +1,29 @@
 module GLMath
-  module Vector
-    module ClassMethods
-      def [](*array)
-        new(*array)
-      end
+  class Vector
 
-      def zero
-        new(*([0.0] * size))
-      end
-    end
-
-    def self.included(base)
-      base.define_singleton_method(:size, ->() { base.const_get(:SIZE) })
-      base.extend ClassMethods
-      base.const_set(:Zero, base.zero.freeze)
+    def self.[](*array)
+      new(*array)
     end
 
     def initialize(*args)
-      raise ArgumentError, "wrong number of arguments (#{args.size} for #{size})" if args.size != size
       raise ArgumentError, "It's not numeric" unless args.all? { |e| Numeric === e }
       @v = args
     end
 
-    %w'+ -'.each do |sign|
-      define_method(sign, ->(v) do
-        raise ArgumentError, "no implicit conversion of #{v.class} into #{self.class}" unless self.class === v
-        v = v.instance_variable_get(:@v)
-        self.class.new(*@v.zip(v).map! { |a, b| a.send(sign, b) })
-      end)
+    def +(v)
+      v = v.to_a
+      assert_size v.size
+      self.class.new(*@v.zip(v).map! { |a, b| a + b })
+    end
+
+    def -(v)
+      v = v.to_a
+      assert_size v.size
+      self.class.new(*@v.zip(v).map! { |a, b| a - b })
+    end
+
+    def +@
+      self.class.new(*@v.map(&:+@))
     end
 
     def -@
@@ -49,7 +45,14 @@ module GLMath
     end
 
     def [](i)
+      assert_index i
       @v[i]
+    end
+
+    def []=(i, value)
+      raise ArgumentError, "It's not numeric" unless Numeric === value
+      assert_index i
+      @v[i] = value
     end
 
     def angle(other)
@@ -90,8 +93,8 @@ module GLMath
     end
 
     def inner_product(v)
-      raise ArgumentError, "no implicit conversion of #{v.class} into #{self.class}" unless self.class === v
-      v = v.instance_variable_get(:@v)
+      v = v.to_a
+      assert_size v.size
       @v.zip(v).map! { |a, b| a * b }.reduce(&:+)
     end
 
@@ -110,7 +113,7 @@ module GLMath
     end
 
     def size
-      self.class.size
+      @v.size
     end
 
     def square_magnitude
@@ -119,11 +122,6 @@ module GLMath
 
     def zero?
       @v.all?(&:zero?)
-    end
-
-    %w'x y'.each_with_index do |s, i|
-      define_method s, ->(){ @v[i] }
-      define_method "#{s}=", ->(v){ @v[i] = v }
     end
 
     def to_a
@@ -140,7 +138,7 @@ module GLMath
     end
 
     def inspect
-      "Vector#{size}#{@v.inspect}"
+      "#{self.class.lastname}#{@v.inspect}"
     end
 
     alias_method :dot,           :inner_product
@@ -150,6 +148,51 @@ module GLMath
     alias_method :map,           :collect
     alias_method :square_length, :square_magnitude
     alias_method :square_norm,   :square_magnitude
-    # alias_method :to_ary,        :to_a
+
+    private
+    def assert_size(size)
+      raise ArgumentError, "expected size #{self.size} but got #{size}" if size != self.size
+    end
+
+    def assert_index(i)
+      raise ArgumentError, "expected index between 0 and #{self.size-1} but got #{i}" unless (0...self.size).include?(i)
+    end
+  end
+
+  def self.Vector(components)
+    components_size = components.size
+
+    Class.new(Vector) do
+      define_singleton_method :size, ->() { components_size }
+      define_method :size, ->() { components_size }
+      define_singleton_method :zero, ->() { new(*([0.0] * components_size)) }
+
+      def initialize(*args)
+        assert_size args.size
+        super
+      end
+
+      components_regex = /^[#{components.join}]{2,}$/
+      define_method :method_missing do |name, *args, &block|
+        case name
+          when components_regex
+            raise ArgumentError, "wrong number of arguments (given #{args.size}, expected 0)" unless args.size == 0
+            values = name.to_s.each_char.to_a.map { |component| send(component) }
+            type_name = "Vector#{values.size}"
+            type = GLMath.const_defined?(type_name) ? GLMath.const_get(type_name) : Vector
+            type.new(*values)
+          else
+            super(name, *args, &block)
+        end
+      end
+
+      components.each_with_index do |component, i|
+        define_method component, ->() { self[i] }
+        define_method "#{component}=", ->(value) { self[i] = value }
+
+        init_vector = components.map { 0.0 }.tap { |v| v[i] = 1.0 }
+        define_singleton_method component, ->() { new(*init_vector) }
+      end
+    end
   end
 end

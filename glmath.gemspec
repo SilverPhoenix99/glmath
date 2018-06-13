@@ -11,5 +11,6 @@ Gem::Specification.new do |s|
   s.homepage      = 'https://github.com/SilverPhoenix99/glmath'
   s.require_paths = %w'lib'
   s.files         = Dir['{lib/**/*.rb,*.md}']
+  s.add_dependency 'facets', '~> 3'
   s.add_development_dependency 'rspec', '~> 3'
 end
