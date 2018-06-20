@@ -1,6 +1,6 @@
 require_relative 'spec_helper'
 
-RSpec.describe Vector2 do
+RSpec.describe GLMath::Vector2 do
 
   describe '::size' do
     it 'should be 2' do

@@ -4,18 +4,16 @@ module GLMath
     DIMENSION = 2
     LENGTH    = 4
 
-    class << self
-      #conter-clockwise rotation
-      def rotation(theta, homogenous = false)
-        s, c = Math.sin(theta), Math.cos(theta)
-        m = new(c, -s, s, c)
-        homogenous ? m.expand : m
-      end
+    #conter-clockwise rotation
+    def self.rotation(theta, homogenous = false)
+      s, c = Math.sin(theta), Math.cos(theta)
+      m = new(c, -s, s, c)
+      homogenous ? m.expand : m
+    end
 
-      def scale(x, y, homogenous = false)
-        m = diagonal(x, y)
-        homogenous ? m.expand : m
-      end
+    def self.scale(x, y, homogenous = false)
+      m = diagonal(x, y)
+      homogenous ? m.expand : m
     end
 
     include Matrix

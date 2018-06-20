@@ -4,37 +4,34 @@ module GLMath
     DIMENSION = 3
     LENGTH    = 9
 
-    class << self
+    def self.rotation(angle, axis, homogenous = false)
+      n = axis.normalize
+      ct = Math.cos(angle)
+      st = Math.sin(angle)
+      ct1 = 1 - ct
+      xy = n.x * n.y * ct1
+      xz = n.x * n.z * ct1
+      yz = n.y * n.z * ct1
 
-      def rotation(angle, axis, homogenous = false)
-        n = axis.normalize
-        ct = Math.cos(angle)
-        st = Math.sin(angle)
-        ct1 = 1 - ct
-        xy = n.x * n.y * ct1
-        xz = n.x * n.z * ct1
-        yz = n.y * n.z * ct1
+      m = new(n.x*n.x*ct1 + ct, xy + n.z * st,    xz - n.y * st,
+              xy - n.z * st,    n.y*n.y*ct1 + ct, yz + n.x * st,
+              xz + n.y * st,    yz - n.x * st,    n.z*n.z*ct1 + ct)
+      homogenous ? m.expand : m
+    end
 
-        m = new(n.x*n.x*ct1 + ct, xy + n.z * st,    xz - n.y * st,
-                xy - n.z * st,    n.y*n.y*ct1 + ct, yz + n.x * st,
-                xz + n.y * st,    yz - n.x * st,    n.z*n.z*ct1 + ct)
-        homogenous ? m.expand : m
-      end
+    def self.scale(x, y, z, homogenous = false)
+      m = diagonal(x, y, z)
+      homogenous ? m.expand : m
+    end
 
-      def scale(x, y, z, homogenous = false)
-        m = diagonal(x, y, z)
-        homogenous ? m.expand : m
-      end
+    def self.translation(x, y)
+      Matrix3.new(1.0, 0.0, 0.0,
+                  0.0, 1.0, 0.0,
+                  x,   y,   1.0)
+    end
 
-      def translation(x, y)
-        Matrix3.new(1.0, 0.0, 0.0,
-                    0.0, 1.0, 0.0,
-                    x,   y,   1.0)
-      end
-
-      def from_euler_angle(x:, y:, z:)
-        # TODO
-      end
+    def self.from_euler_angle(x:, y:, z:)
+      # TODO
     end
 
     include Matrix

@@ -16,7 +16,7 @@ RSpec.describe Vector4 do
 
   describe '::zero' do
     it 'creates a zero vector' do
-      expect(Vector3.zero).to eq(Vector3[0.0, 0.0, 0.0])
+      expect(Vector4.zero).to eq(Vector4[0.0, 0.0, 0.0, 0.0])
     end
   end
 

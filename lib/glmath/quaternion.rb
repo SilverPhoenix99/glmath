@@ -1,23 +1,21 @@
 module GLMath
   class Quaternion
-    class << self
-      def [](*args)
-        new(*args)
-      end
+    def self.[](*args)
+      new(*args)
+    end
 
-      def from_angle_axis(angle, axis)
-        angle *= 0.5
-        sa = Math.sin(angle)
-        new(Math.cos(angle), sa * axis.x, sa * axis.y, sa * axis.z)
-      end
+    def self.from_angle_axis(angle, axis)
+      angle *= 0.5
+      sa = Math.sin(angle)
+      new(Math.cos(angle), sa * axis.x, sa * axis.y, sa * axis.z)
+    end
 
-      def identity
-        new(1.0, 0.0, 0.0, 0.0)
-      end
+    def self.identity
+      new(1.0, 0.0, 0.0, 0.0)
+    end
 
-      def slerp(q0, q1, t)
-        (q1 * q0.inverse).power(t) * q0
-      end
+    def self.slerp(q0, q1, t)
+      (q1 * q0.inverse).power(t) * q0
     end
 
     def initialize(w, x, y, z)
@@ -29,10 +27,10 @@ module GLMath
 
     def +(v)
       case v
-        when Numeric
+        when Integer, Float, Rational
           self.class.new(v + w, x, y, z)
         when Quaternion
-          self.class.new(q + v.w, x + v.x, y + v.y, z + v.z)
+          self.class.new(w + v.w, x + v.x, y + v.y, z + v.z)
         else
           v + self
       end
@@ -44,8 +42,8 @@ module GLMath
 
     def *(v)
       case v
-        when Numeric
-          self.class.new(q * v, x * v, y * v, z * v)
+        when Integer, Float, Rational
+          self.class.new(w * v, x * v, y * v, z * v)
         when Quaternion
           cross_product(v)
       end
@@ -53,8 +51,8 @@ module GLMath
 
     def /(v)
       case v
-        when Numeric
-          self.class.new(*@q.map { |i| i/v})
+        when Integer, Float, Rational
+          self.class.new(*@q.map { |i| i / v.to_f })
         when Quaternion
           self * v.inverse
       end
@@ -62,6 +60,10 @@ module GLMath
 
     def -@
       self.class.new(*@q.map(&:-@))
+    end
+
+    def +@
+      self.class.new(*@q.map(&:+@))
     end
 
     def ==(other)
@@ -74,12 +76,12 @@ module GLMath
     end
 
     def angle
-      Math.acos(@q[0]) * 2.0
+      Math.acos(w) * 2.0
     end
 
     def axis
-      sa = 1.0 / Math.sqrt(1.0 - @q[0]*@q[0])
-      Vector3[@q[1]*sa, @q[2]*sa, @q[3]*sa]
+      sa = 1.0 / Math.sqrt(1.0 - w * w)
+      Vector3[x * sa, y * sa, z * sa]
     end
 
     def coerce(v)
@@ -100,6 +102,7 @@ module GLMath
 
     #Warning: standard notation.
     def cross_product(q)
+      raise ArgumentError, "cross product not defined for #{q}" unless q.is_a? Quaternion
       self.class.new(
         w * q.w - x * q.x - y * q.y - z * q.z,
         w * q.x + x * q.w + y * q.z - z * q.y,
@@ -108,10 +111,12 @@ module GLMath
     end
 
     def difference(q)
+      raise ArgumentError, "difference not defined for #{q}" unless q.is_a? Quaternion
       q * inverse
     end
 
     def dot_product(q)
+      raise ArgumentError, "inner product not defined for #{q}" unless q.is_a? Quaternion
       w * q.w + x * q.x + y * q.y + z * q.z
     end
 
@@ -120,7 +125,7 @@ module GLMath
     end
 
     def exp
-      a = Math.sqrt(x*x + y*y + z*z)
+      a = Math.sqrt(x * x + y * y + z * z)
       ew = Math.exp(w)
       s = ew * Math.sin(a) / a
       self.class.new(ew * Math.cos(a), x * s, y * s, z * s)
@@ -140,9 +145,9 @@ module GLMath
     end
 
     def log
-      nv = x*x + y*y + z*z
-      nq = Math.sqrt(w*w + nv)
-      s = Math.acos(w/nq) / Math.sqrt(nv)
+      nv = x * x + y * y + z * z
+      nq = Math.sqrt(w * w + nv)
+      s = Math.acos(w / nq) / Math.sqrt(nv)
       self.class.new(Math.log(nq), x * s, y * s, z * s)
     end
 
@@ -162,6 +167,10 @@ module GLMath
 
     def power(p)
       (log * p).exp
+    end
+
+    def real?
+      false
     end
 
     def rotate(v3)
@@ -185,11 +194,11 @@ module GLMath
     def to_s(notation = nil)
       case notation
         when :scalar
-          "Quaternion(w=#{w}, x=#{x}, y=#{y}, z=#{z})"
+          "<Quaternion(w: #{w}, x: #{x}, y: #{y}, z: #{z})>"
         when :vertical
-          "w=#{w}\nx=#{x}\ny=#{y}\nz=#{z}"
+          "w: #{w}\nx: #{x}\ny: #{y}\nz: #{z}"
         else
-          "Quaternion(#{w}, [#{x}, #{y}, #{z}])"
+          "<Quaternion(#{w}, [#{x}, #{y}, #{z}])>"
       end
     end
 

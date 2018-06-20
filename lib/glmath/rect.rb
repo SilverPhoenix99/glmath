@@ -16,7 +16,7 @@ module GLMath
     end
 
     def self.from_center(cx: 0, cy: 0, width: 0, height: 0)
-      new(x: cx - width / 2, y: cy - height / 2, width: width, height: height)
+      new(x: cx - width / 2.0, y: cy - height / 2.0, width: width, height: height)
     end
 
     def self.square(x: 0, y: 0, size: 0)
@@ -36,7 +36,7 @@ module GLMath
 
     def ==(r)
       return false unless r.is_a? Rect
-      %w(x y width height).all?{ |v| self[v] == r[v] }
+      %w(x y width height).all? { |v| self[v] == r[v] }
     end
 
     def top
@@ -59,16 +59,20 @@ module GLMath
       [center_x, center_y]
     end
 
+    def center_vector
+      Vector2[center_x, center_y]
+    end
+
     def center_x
-      x + width / 2
+      x + width / 2.0
     end
 
     def center_y
-      y + height / 2
+      y + height / 2.0
     end
 
     def include?(x, y)
-      (left..right).include?(x) && (bottom..top).include?(y)
+      (left..right).include?(x) && (top..bottom).include?(y)
     end
 
     def outside?(x, y)
@@ -76,7 +80,7 @@ module GLMath
     end
 
     def to_a
-      [left, bottom, width, height]
+      [left, top, width, height]
     end
 
     def area
@@ -87,16 +91,32 @@ module GLMath
       2 * (width + height)
     end
 
-    def to_s
-      "<Rect #{%w'x y width height'.map { |name| "#{name} = #{send(name)}" }.join(', ')}>"
+    def left_top
+      [left, top]
     end
 
-    def vertices(format = :strip)
-      case format
-      when :strip then [[left, top], [right, top], [left, bottom], [right, bottom]]
-      when :cycle then [[left, top], [right, top], [right, bottom], [left, bottom]]
-      else nil
-      end
+    def left_bottom
+      [left, bottom]
+    end
+
+    def right_top
+      [right, top]
+    end
+
+    def right_bottom
+      [right, bottom]
+    end
+
+    def to_s
+      "<Rect #{%w'x y width height'.map { |name| "#{name}: #{send(name)}" }.join(', ')}>"
+    end
+
+    def strip_vertices
+      [left_top, right_top, left_bottom, right_bottom]
+    end
+
+    def cycle_vertices
+      [left_top, right_top, right_bottom, left_bottom]
     end
 
     alias_method :to_ary, :to_a

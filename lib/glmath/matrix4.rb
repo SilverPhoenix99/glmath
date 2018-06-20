@@ -5,51 +5,49 @@ module GLMath
     DIMENSION = 4
     LENGTH    = 16
 
-    class << self
-      def look_at(eye, center, up)
-        f = (center - eye).normalize!
-        s = f.cross(up).normalize!
-        u = s.cross(f).normalize!
-        new(s.x,    u.x,   -f.x,   0.0,
-            s.y,    u.y,   -f.y,   0.0,
-            s.z,    u.z,   -f.z,   0.0,
-           -eye.x, -eye.y, -eye.z, 1.0)
-      end
+    def self.look_at(eye, center, up)
+      f = (center - eye).normalize!
+      s = f.cross(up).normalize!
+      u = s.cross(f).normalize!
+      new(s.x,    u.x,   -f.x,   0.0,
+          s.y,    u.y,   -f.y,   0.0,
+          s.z,    u.z,   -f.z,   0.0,
+         -eye.x, -eye.y, -eye.z, 1.0)
+    end
 
-      def ortho(left, right, bottom, top, near, far)
-        rl = right.to_f - left.to_f
-        tb = top.to_f   - bottom.to_f
-        fn = far.to_f   - near.to_f
+    def self.ortho(left, right, bottom, top, near, far)
+      rl = right.to_f - left.to_f
+      tb = top.to_f   - bottom.to_f
+      fn = far.to_f   - near.to_f
 
-        new(2.0/rl,              0.0,                0.0,                 0.0,
-            0.0,                 2.0/tb,             0.0,                 0.0,
-            0.0,                 0.0,               -2.0/fn,              0.0,
-            -(right + left)/rl, -(top + bottom)/tb, -(far + near)/fn,     1.0)
-      end
+      new(2.0/rl,              0.0,                0.0,                 0.0,
+          0.0,                 2.0/tb,             0.0,                 0.0,
+          0.0,                 0.0,               -2.0/fn,              0.0,
+          -(right + left)/rl, -(top + bottom)/tb, -(far + near)/fn,     1.0)
+    end
 
-      def perspective(fovy, aspect, near, far)
-        zoom  = 1.0 / Math.tan(fovy * 0.5)
-        fn = 1.0 / (far - near)
-        new(zoom/aspect,  0.0,             0.0,  0.0,
-            0.0,         zoom,             0.0,  0.0,
-            0.0,          0.0,  (far + near)*fn, 1.0,
-            0.0,          0.0, -2.0*far*near*fn, 0.0)
-      end
+    def self.perspective(fovy, aspect, near, far)
+      zoom  = 1.0 / Math.tan(fovy * 0.5)
+      fn = 1.0 / (far - near)
+      new(zoom/aspect,  0.0,             0.0,  0.0,
+          0.0,         zoom,             0.0,  0.0,
+          0.0,          0.0,  (far + near)*fn, 1.0,
+          0.0,          0.0, -2.0*far*near*fn, 0.0)
+    end
 
-      def rotation(angle, axis)
-        Matrix3.rotation(angle, axis, true)
-      end
+    def self.rotation(angle, axis)
+      Matrix3.rotation(angle, axis, true)
+    end
 
-      def scale(x, y, z, w = 1.0)
-        diagonal(x, y, z, w)
-      end
+    def self.scale(x, y, z, w = 1.0)
+      diagonal(x, y, z, w)
+    end
 
-      def translation(x, y, z)
-        Matrix4.new(1.0, 0.0, 0.0, 0.0,
-                    0.0, 1.0, 0.0, 0.0,
-                    0.0, 0.0, 1.0, 0.0,
-                    x,   y,   z,   1.0)
-      end
+    def self.translation(x, y, z)
+      Matrix4.new(1.0, 0.0, 0.0, 0.0,
+                  0.0, 1.0, 0.0, 0.0,
+                  0.0, 0.0, 1.0, 0.0,
+                  x,   y,   z,   1.0)
     end
 
     include Matrix

@@ -1,26 +1,26 @@
 require_relative 'spec_helper'
 
-RSpec.describe Vector do
+RSpec.describe GLMath::Vector do
 
   describe '#initialize' do
     it "doesn't expect non Numeric parameters" do
-      expect { Vector.new(1.0, :a) }.to raise_error(ArgumentError)
+      expect { GLMath::Vector.new(1.0, :a) }.to raise_error(ArgumentError)
     end
 
     it 'expects 2 Numeric parameters' do
-      expect { Vector.new(1.0, 2.0)}.not_to raise_error
+      expect { GLMath::Vector.new(1.0, 2.0)}.not_to raise_error
     end
   end
 
-  subject { Vector.new(1.0, 2.0) }
+  subject { GLMath::Vector.new(1.0, 2.0) }
 
   describe '#angle' do
     it 'should have a 0 degree angle with itself' do
       expect(subject.angle(subject)).to eq 0
     end
 
-    it 'should have a 90 degree angle with Vector(-2, 1)' do
-      expect(subject.angle(Vector[-2, 1])).to eq (Math::PI / 2)
+    it 'should have a 90 degree angle with GLMath::Vector(-2, 1)' do
+      expect(subject.angle(GLMath::Vector[-2, 1])).to eq (Math::PI / 2)
     end
   end
 
@@ -49,7 +49,7 @@ RSpec.describe Vector do
     end
 
     it 'returns self if passed a block' do
-      expect(subject.each { |x| x+ 1 }).to equal subject
+      expect(subject.each { |x| x + 1 }).to equal subject
     end
   end
 
@@ -63,7 +63,7 @@ RSpec.describe Vector do
     end
 
     it 'is false when compared to a a different vector' do
-      expect(subject.eql? Vector[2, 3]).to be false
+      expect(subject.eql? GLMath::Vector[2, 3]).to be false
     end
 
     it 'is false when compared to a a different class object' do
@@ -72,8 +72,8 @@ RSpec.describe Vector do
   end
 
   describe '#sum' do
-    it 'accepts a Vector' do
-      expect((subject + Vector[2.0, 1.0])).to eq Vector[3.0, 3.0]
+    it 'accepts a GLMath::Vector' do
+      expect((subject + GLMath::Vector[2.0, 1.0])).to eq GLMath::Vector[3.0, 3.0]
     end
 
     it "doesn't accept objects without #to_a method" do
@@ -82,8 +82,8 @@ RSpec.describe Vector do
   end
 
   describe '#subtraction' do
-    it 'accepts a Vector' do
-      expect((subject - Vector[2.0, 1.0])).to eq Vector[-1.0, 1.0]
+    it 'accepts a GLMath::Vector' do
+      expect((subject - GLMath::Vector[2.0, 1.0])).to eq GLMath::Vector[-1.0, 1.0]
     end
 
     it "doesn't accept objects without #to_a method" do
@@ -93,7 +93,7 @@ RSpec.describe Vector do
 
   describe '#division' do
     it 'accepts a Numeric' do
-      expect(subject / 2.0).to eq Vector[subject[0] / 2.0, subject[1] / 2.0]
+      expect(subject / 2.0).to eq GLMath::Vector[subject[0] / 2.0, subject[1] / 2.0]
     end
 
     it "doesn't accept something other than a Numeric" do
@@ -103,18 +103,18 @@ RSpec.describe Vector do
 
   describe '#symmetric' do
     it 'should have symetric x and y values' do
-      expect(-subject).to eq Vector[-subject[0], -subject[1]]
+      expect(-subject).to eq GLMath::Vector[-subject[0], -subject[1]]
     end
   end
 
   describe '#+@' do
     it 'should apply #+@ to its members' do
-      expect(+subject).to eq Vector[+subject[0], +subject[1]]
+      expect(+subject).to eq GLMath::Vector[+subject[0], +subject[1]]
     end
   end
 
   describe '#inner_product' do
-    it 'accepts a Vector' do
+    it 'accepts a GLMath::Vector' do
       expect(subject.dot(subject)).to eq 5
     end
 
@@ -132,7 +132,7 @@ RSpec.describe Vector do
   describe '#normalize' do
     it 'should return a normalized vector' do
       normalized = subject.normalize
-      expect(normalized).to eq Vector[1.0 / Math.sqrt(5), 2.0 / Math.sqrt(5)]
+      expect(normalized).to eq GLMath::Vector[1.0 / Math.sqrt(5), 2.0 / Math.sqrt(5)]
       expect(normalized.magnitude).to eq 1.0
     end
   end
@@ -140,14 +140,14 @@ RSpec.describe Vector do
   describe '#normalize!' do
     it 'should return a normalized vector' do
       expect(subject.normalize!).to equal subject
-      expect(subject.normalize!).to eq Vector[1.0 / Math.sqrt(5), 2.0 / Math.sqrt(5)]
+      expect(subject.normalize!).to eq GLMath::Vector[1.0 / Math.sqrt(5), 2.0 / Math.sqrt(5)]
       expect(subject.magnitude).to eq 1.0
     end
   end
 
   describe '#zero?' do
     it "return true if it's a zero vector" do
-      expect(Vector[0.0, 0.0]).to be_zero
+      expect(GLMath::Vector[0.0, 0.0]).to be_zero
     end
 
     it "return false if it isn't a zero vector" do
